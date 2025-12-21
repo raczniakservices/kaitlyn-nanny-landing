@@ -78,7 +78,8 @@ export default function AutomationsPage() {
                     </div>
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                    <a href="/" style={{ color: '#2563eb' }}>← Back to targets</a>
+                    <a href="/" style={{ color: '#2563eb' }}>← Public landing</a>
+                    <a href="/admin/targets" style={{ color: '#111827', fontWeight: 800 }}>Targets</a>
                 </div>
             </div>
 

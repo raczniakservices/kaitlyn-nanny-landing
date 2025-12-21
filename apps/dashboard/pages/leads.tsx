@@ -82,7 +82,8 @@ export default function LeadsInboxPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                     <a href="/intake" style={{ color: '#2563eb', fontWeight: 800 }}>Open intake page →</a>
-                    <a href="/" style={{ color: '#111827', fontWeight: 800 }}>Dashboard</a>
+                    <a href="/" style={{ color: '#111827', fontWeight: 800 }}>Public landing</a>
+                    <a href="/admin/targets" style={{ color: '#111827', fontWeight: 800 }}>Targets</a>
                 </div>
             </div>
 
