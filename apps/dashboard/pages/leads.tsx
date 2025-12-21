@@ -89,11 +89,11 @@ export default function LeadsInboxPage() {
             <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <input
                     value={q}
-                    onChange={e => setQ(e.target.value)}
+                    onChange={(e) => setQ(e.currentTarget.value)}
                     placeholder="Search leads (name, service, area, etc.)"
                     style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db', minWidth: 320 }}
                 />
-                <select value={contactFilter} onChange={e => setContactFilter(e.target.value)} style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db' }}>
+                <select value={contactFilter} onChange={(e) => setContactFilter(e.currentTarget.value)} style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db' }}>
                     <option value="">All contact methods</option>
                     <option value="facebook">Facebook</option>
                     <option value="text">Text</option>

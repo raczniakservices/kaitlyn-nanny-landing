@@ -87,7 +87,7 @@ export default function AutomationsPage() {
                 <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
                     <input
                         value={url}
-                        onChange={e => setUrl(e.target.value)}
+                        onChange={(e) => setUrl(e.currentTarget.value)}
                         placeholder="https://example.com"
                         style={{ padding: 10, borderRadius: 10, border: '1px solid #d1d5db', minWidth: 280 }}
                     />

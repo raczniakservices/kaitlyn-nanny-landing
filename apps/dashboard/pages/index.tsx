@@ -113,11 +113,11 @@ Hi, I checked ${row.domain} on my phone. The contact form has ${row.form_inputs}
                 </div>
                 <div>
                     <label>Region</label>
-                    <input value={regionFilter} onChange={e => setRegionFilter(e.target.value)} placeholder="e.g., Harford" />
+                    <input value={regionFilter} onChange={(e) => setRegionFilter(e.currentTarget.value)} placeholder="e.g., Harford" />
                 </div>
                 <div>
                     <label>Min Score: {minScore}</label>
-                    <input type="range" min={0} max={100} value={minScore} onChange={e => setMinScore(Number(e.target.value))} />
+                    <input type="range" min={0} max={100} value={minScore} onChange={(e) => setMinScore(Number(e.currentTarget.value))} />
                 </div>
                 <div>
                     <label>

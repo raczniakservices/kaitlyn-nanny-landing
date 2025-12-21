@@ -222,7 +222,7 @@ export default function IntakePage() {
                 headers: { 'content-type': 'application/json' },
                 body: JSON.stringify(form)
             });
-            const json = await res.json().catch(() => ({}));
+            const json = (await res.json().catch(() => ({}))) as any;
             if (!res.ok || !json.ok) throw new Error(json.error || 'Submission failed');
             setDone(true);
         } catch (e: any) {
@@ -287,33 +287,33 @@ export default function IntakePage() {
                                 <h2 style={h2}>Your business</h2>
                                 <div style={grid2}>
                                     <Field label="Business name *">
-                                        <input style={input} value={form.businessName} onChange={e => update('businessName', e.target.value)} placeholder="e.g., Summit Roofing" />
+                                        <input style={input} value={form.businessName} onChange={(e) => update('businessName', e.currentTarget.value)} placeholder="e.g., Summit Roofing" />
                                     </Field>
                                     <Field label="Service type *">
-                                        <select style={input} value={form.serviceType} onChange={e => update('serviceType', e.target.value)}>
+                                        <select style={input} value={form.serviceType} onChange={(e) => update('serviceType', e.currentTarget.value)}>
                                             {SERVICE_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
                                         </select>
                                     </Field>
                                 </div>
                                 {form.serviceType === 'Other (type it)' ? (
                                     <Field label="Type your service *">
-                                        <input style={input} value={form.serviceTypeOther} onChange={e => update('serviceTypeOther', e.target.value)} placeholder="What do you do?" />
+                                        <input style={input} value={form.serviceTypeOther} onChange={(e) => update('serviceTypeOther', e.currentTarget.value)} placeholder="What do you do?" />
                                     </Field>
                                 ) : null}
 
                                 <div style={grid2}>
                                     <Field label="Website (optional)">
-                                        <input style={input} value={form.website} onChange={e => update('website', e.target.value)} placeholder="https://yourwebsite.com" />
+                                        <input style={input} value={form.website} onChange={(e) => update('website', e.currentTarget.value)} placeholder="https://yourwebsite.com" />
                                     </Field>
                                     <Field label="Google Business Profile link (optional)">
-                                        <input style={input} value={form.gbpUrl} onChange={e => update('gbpUrl', e.target.value)} placeholder="Paste your GBP link (if you have one)" />
+                                        <input style={input} value={form.gbpUrl} onChange={(e) => update('gbpUrl', e.currentTarget.value)} placeholder="Paste your GBP link (if you have one)" />
                                     </Field>
                                 </div>
 
                                 {/* Honeypot */}
                                 <div style={{ display: 'none' }}>
                                     <label>Company</label>
-                                    <input value={form.company} onChange={e => update('company', e.target.value)} />
+                                    <input value={form.company} onChange={(e) => update('company', e.currentTarget.value)} />
                                 </div>
                             </>
                         ) : null}
@@ -323,7 +323,7 @@ export default function IntakePage() {
                                 <h2 style={h2}>Goals + setup</h2>
                                 <div style={grid2}>
                                     <Field label="Service area *">
-                                        <select style={input} value={form.serviceArea} onChange={e => update('serviceArea', e.target.value)}>
+                                        <select style={input} value={form.serviceArea} onChange={(e) => update('serviceArea', e.currentTarget.value)}>
                                             {[
                                                 'Baltimore Metro (City + County)',
                                                 'Baltimore City',
@@ -337,7 +337,7 @@ export default function IntakePage() {
                                         </select>
                                     </Field>
                                     <Field label="Urgency *">
-                                        <select style={input} value={form.urgency} onChange={e => update('urgency', e.target.value)}>
+                                        <select style={input} value={form.urgency} onChange={(e) => update('urgency', e.currentTarget.value)}>
                                             {['ASAP (this week)', '2–4 weeks', '1–3 months', 'Just planning'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
@@ -360,12 +360,12 @@ export default function IntakePage() {
 
                                 <div style={grid2}>
                                     <Field label="Currently running ads?">
-                                        <select style={input} value={form.currentlyRunningAds} onChange={e => update('currentlyRunningAds', e.target.value)}>
+                                        <select style={input} value={form.currentlyRunningAds} onChange={(e) => update('currentlyRunningAds', e.currentTarget.value)}>
                                             {['No', 'Yes', 'Not sure'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
                                     <Field label="Monthly ad spend (estimate)">
-                                        <select style={input} value={form.monthlyAdSpend} onChange={e => update('monthlyAdSpend', e.target.value)}>
+                                        <select style={input} value={form.monthlyAdSpend} onChange={(e) => update('monthlyAdSpend', e.currentTarget.value)}>
                                             {['$0–$300', '$300–$1k', '$1k–$3k', '$3k–$10k', '$10k+'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
@@ -381,12 +381,12 @@ export default function IntakePage() {
 
                                 <div style={grid2}>
                                     <Field label="Do you track leads today?">
-                                        <select style={input} value={form.leadTracking} onChange={e => update('leadTracking', e.target.value)}>
+                                        <select style={input} value={form.leadTracking} onChange={(e) => update('leadTracking', e.currentTarget.value)}>
                                             {['Not really', 'Calls only', 'Forms only', 'Calls + forms', 'We don’t know'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
                                     <Field label="How fast do you respond to leads?">
-                                        <select style={input} value={form.leadResponseSpeed} onChange={e => update('leadResponseSpeed', e.target.value)}>
+                                        <select style={input} value={form.leadResponseSpeed} onChange={(e) => update('leadResponseSpeed', e.currentTarget.value)}>
                                             {['We answer immediately', 'Call back within 1 hour', 'Same day', 'Next day+'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
@@ -399,12 +399,12 @@ export default function IntakePage() {
                                 <h2 style={h2}>Capacity + contact (Facebook-first)</h2>
                                 <div style={grid2}>
                                     <Field label="Average job value">
-                                        <select style={input} value={form.averageJobValue} onChange={e => update('averageJobValue', e.target.value)}>
+                                        <select style={input} value={form.averageJobValue} onChange={(e) => update('averageJobValue', e.currentTarget.value)}>
                                             {['<$250', '$250–$750', '$750–$2,500', '$2,500–$10k', '$10k+'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
                                     <Field label="New jobs you can handle per week">
-                                        <select style={input} value={form.weeklyCapacity} onChange={e => update('weeklyCapacity', e.target.value)}>
+                                        <select style={input} value={form.weeklyCapacity} onChange={(e) => update('weeklyCapacity', e.currentTarget.value)}>
                                             {['1–3', '4–10', '10–25', '25+'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
@@ -412,28 +412,28 @@ export default function IntakePage() {
 
                                 <div style={grid2}>
                                     <Field label="Do you offer financing / payment plans?">
-                                        <select style={input} value={form.financing} onChange={e => update('financing', e.target.value)}>
+                                        <select style={input} value={form.financing} onChange={(e) => update('financing', e.currentTarget.value)}>
                                             {['No', 'Yes', 'Not sure'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
                                     <Field label="CRM (optional)">
-                                        <select style={input} value={form.crm} onChange={e => update('crm', e.target.value)}>
+                                        <select style={input} value={form.crm} onChange={(e) => update('crm', e.currentTarget.value)}>
                                             {['No / Not sure', 'Jobber', 'ServiceTitan', 'Housecall Pro', 'HubSpot', 'Other'].map(v => <option key={v} value={v}>{v}</option>)}
                                         </select>
                                     </Field>
                                 </div>
                                 {form.crm === 'Other' ? (
                                     <Field label="CRM name (optional)">
-                                        <input style={input} value={form.crmOther} onChange={e => update('crmOther', e.target.value)} placeholder="Type your CRM" />
+                                        <input style={input} value={form.crmOther} onChange={(e) => update('crmOther', e.currentTarget.value)} placeholder="Type your CRM" />
                                     </Field>
                                 ) : null}
 
                                 <Field label="What makes you better than competitors? (optional)">
-                                    <input style={input} value={form.differentiator} onChange={e => update('differentiator', e.target.value)} placeholder="e.g., same-day service, warranty, best reviews, 24/7" />
+                                    <input style={input} value={form.differentiator} onChange={(e) => update('differentiator', e.currentTarget.value)} placeholder="e.g., same-day service, warranty, best reviews, 24/7" />
                                 </Field>
 
                                 <Field label="Biggest problem right now (optional)">
-                                    <input style={input} value={form.biggestProblem} onChange={e => update('biggestProblem', e.target.value)} placeholder="e.g., not enough calls, price shoppers, slow season, low close rate" />
+                                    <input style={input} value={form.biggestProblem} onChange={(e) => update('biggestProblem', e.currentTarget.value)} placeholder="e.g., not enough calls, price shoppers, slow season, low close rate" />
                                 </Field>
 
                                 <div style={{ marginTop: 12, padding: 12, borderRadius: 12, border: '1px solid #e5e7eb', background: '#fafafa' }}>
@@ -449,37 +449,37 @@ export default function IntakePage() {
                                         {form.contactMethod === 'facebook' ? (
                                             <div style={grid2}>
                                                 <Field label="Facebook Page URL (preferred)">
-                                                    <input style={input} value={form.facebookUrl} onChange={e => update('facebookUrl', e.target.value)} placeholder="https://facebook.com/yourpage" />
+                                                    <input style={input} value={form.facebookUrl} onChange={(e) => update('facebookUrl', e.currentTarget.value)} placeholder="https://facebook.com/yourpage" />
                                                 </Field>
                                                 <Field label="Facebook name (backup)">
-                                                    <input style={input} value={form.facebookName} onChange={e => update('facebookName', e.target.value)} placeholder="Exact page name" />
+                                                    <input style={input} value={form.facebookName} onChange={(e) => update('facebookName', e.currentTarget.value)} placeholder="Exact page name" />
                                                 </Field>
                                             </div>
                                         ) : null}
                                         {form.contactMethod === 'text' || form.contactMethod === 'phone' ? (
                                             <div style={grid2}>
                                                 <Field label="Phone *">
-                                                    <input style={input} value={form.phone} onChange={e => update('phone', e.target.value)} placeholder="Your best number" />
+                                                    <input style={input} value={form.phone} onChange={(e) => update('phone', e.currentTarget.value)} placeholder="Your best number" />
                                                 </Field>
                                                 <Field label="Best time to reach you">
-                                                    <input style={input} value={form.bestTimeToReach} onChange={e => update('bestTimeToReach', e.target.value)} placeholder="e.g., weekdays after 5pm" />
+                                                    <input style={input} value={form.bestTimeToReach} onChange={(e) => update('bestTimeToReach', e.currentTarget.value)} placeholder="e.g., weekdays after 5pm" />
                                                 </Field>
                                             </div>
                                         ) : null}
                                         {form.contactMethod === 'email' ? (
                                             <div style={grid2}>
                                                 <Field label="Email *">
-                                                    <input style={input} value={form.email} onChange={e => update('email', e.target.value)} placeholder="you@company.com" />
+                                                    <input style={input} value={form.email} onChange={(e) => update('email', e.currentTarget.value)} placeholder="you@company.com" />
                                                 </Field>
                                                 <Field label="Best time to reach you">
-                                                    <input style={input} value={form.bestTimeToReach} onChange={e => update('bestTimeToReach', e.target.value)} placeholder="e.g., weekdays after 5pm" />
+                                                    <input style={input} value={form.bestTimeToReach} onChange={(e) => update('bestTimeToReach', e.currentTarget.value)} placeholder="e.g., weekdays after 5pm" />
                                                 </Field>
                                             </div>
                                         ) : null}
                                     </div>
 
                                     <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', marginTop: 10 }}>
-                                        <input type="checkbox" checked={form.consent} onChange={e => update('consent', e.target.checked)} />
+                                        <input type="checkbox" checked={form.consent} onChange={(e) => update('consent', e.currentTarget.checked)} />
                                         <div style={{ fontSize: 13, color: '#374151', lineHeight: 1.35 }}>
                                             I agree you can contact me about this request (Facebook/message/text/call/email).
                                         </div>
@@ -508,7 +508,7 @@ export default function IntakePage() {
                                 </div>
                                 <div style={{ marginTop: 12 }}>
                                     <Field label="Anything else we should know? (optional)">
-                                        <textarea style={{ ...input, height: 110 }} value={form.notes} onChange={e => update('notes', e.target.value)} placeholder="Links, competitors, goals, constraints, etc." />
+                                        <textarea style={{ ...input, height: 110 }} value={form.notes} onChange={(e) => update('notes', e.currentTarget.value)} placeholder="Links, competitors, goals, constraints, etc." />
                                     </Field>
                                 </div>
                             </>
