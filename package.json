@@ -1,0 +1,34 @@
+{
+    "name": "@instantquote/dashboard",
+    "version": "1.0.0",
+    "description": "Find and rank local service businesses for InstantQuote microform targeting",
+    "private": true,
+    "workspaces": [
+        "packages/*",
+        "apps/*"
+    ],
+    "scripts": {
+        "build": "next build",
+        "dev": "next dev",
+        "lint": "next lint",
+        "clean": "turbo run clean",
+        "type-check": "turbo run type-check",
+        "start": "next start",
+        "build:packages": "npm run --workspace @instantquote/core build && npm run --workspace @instantquote/automation-showcase build && npm run --workspace @instantquote/lead-finder build",
+        "demo:automations": "npm run build:packages && node apps/lead-finder/dist/cli.js automations demo --out-dir ./data/outputs/automation_showcase"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0",
+        "eslint": "^8.0.0",
+        "turbo": "^1.10.0",
+        "typescript": "^5.0.0"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    },
+    "type": "module"
+}
+
+

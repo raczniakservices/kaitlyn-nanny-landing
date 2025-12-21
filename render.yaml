@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: raczniak-automations-dashboard
+    runtime: node
+    plan: starter
+    rootDir: apps/dashboard
+    buildCommand: npm install --no-audit --no-fund && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+

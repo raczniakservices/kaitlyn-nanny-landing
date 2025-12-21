@@ -1,0 +1,11 @@
+name = "instantquote-worker"
+main = "src/index.ts"
+compatibility_date = "2024-04-18"
+
+[vars]
+DISCORD_WEBHOOK_URL = ""
+CLIENT_KEY = "DEMO_CLIENT"
+
+
+
+

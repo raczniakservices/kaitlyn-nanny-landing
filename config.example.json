@@ -1,0 +1,52 @@
+{
+    "crawler": {
+        "concurrency": 2,
+        "delay_min_ms": 3000,
+        "delay_max_ms": 5000,
+        "timeout_ms": 30000,
+        "user_agent": "InstantQuote Lead Finder Bot (+mailto:cody@instantquote.com)",
+        "respect_robots": true,
+        "cache_results": true
+    },
+    "targeting": {
+        "niche_priority": [
+            "roofing",
+            "hvac",
+            "remodeling",
+            "landscaping",
+            "tree",
+            "pest"
+        ],
+        "regions": [
+            "Harford County, MD",
+            "Baltimore County, MD",
+            "Baltimore City, MD",
+            "Anne Arundel County, MD",
+            "Howard County, MD",
+            "Montgomery County, MD"
+        ],
+        "min_score_for_outreach": 60,
+        "max_targets_per_batch": 200
+    },
+    "export": {
+        "formats": [
+            "csv",
+            "jsonl",
+            "html"
+        ],
+        "output_directory": "./data/outputs",
+        "include_debug_info": false
+    },
+    "outreach": {
+        "email_template": {
+            "subject": "Quick fix for missed mobile leads on {BusinessName}",
+            "body": "Hi {FirstName},\n\nI checked {domain} on my phone. The contact form has {form_inputs} fields and no \"book now\" option. Most people bounce at that point.\n\nI have a one‑tap quote widget you can add with a single line of code. It sends you the lead instantly with photos.\n\nWant me to add it to your site for a week so you can see if it brings in jobs? If text is easier, reply here and I'll set it up.\n\n— Cody"
+        },
+        "max_emails_per_day": 50,
+        "follow_up_days": [
+            3,
+            7,
+            14
+        ]
+    }
+}

@@ -1,0 +1,40 @@
+{
+    "name": "@instantquote/lead-finder",
+    "version": "1.0.0",
+    "description": "Lead finder application for InstantQuote targeting",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "clean": "rm -rf dist",
+        "type-check": "tsc --noEmit",
+        "start": "node dist/cli.js",
+        "run-seeds": "ts-node scripts/run-seeds.ts",
+        "ingest-permits": "ts-node scripts/ingest-permits.ts",
+        "enrich-domains": "ts-node scripts/enrich-domains.ts",
+        "seed-baltimore": "node scripts/seed-baltimore-osm.js"
+    },
+    "dependencies": {
+        "@instantquote/core": "file:../../packages/core",
+        "@instantquote/automation-showcase": "file:../../packages/automation-showcase",
+        "playwright": "^1.40.0",
+        "cheerio": "^1.0.0-rc.12",
+        "robots-txt-parse": "^2.0.1",
+        "csv-parser": "^3.0.0",
+        "csv-writer": "^1.6.0",
+        "commander": "^11.0.0",
+        "chalk": "^5.3.0",
+        "ora": "^7.0.1",
+        "sqlite3": "^5.1.6",
+        "better-sqlite3": "^9.0.0"
+    },
+    "devDependencies": {
+        "@types/better-sqlite3": "^7.6.0",
+        "typescript": "^5.0.0",
+        "ts-node": "^10.9.0"
+    },
+    "bin": {
+        "lead-finder": "./dist/cli.js"
+    }
+}

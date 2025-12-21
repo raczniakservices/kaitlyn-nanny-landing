@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#C45C26"/>
+      <stop offset="1" stop-color="#FF8A3D"/>
+    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1080" fill="#0D0D0D"/>
+
+  <!-- Accent corner -->
+  <path d="M0 0H1080V160H0Z" fill="url(#g)" opacity="0.16"/>
+  <path d="M0 0H160V1080H0Z" fill="url(#g)" opacity="0.08"/>
+
+  <!-- Badge -->
+  <g transform="translate(84,96)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="120" height="120" rx="28" fill="#101010" stroke="url(#g)" stroke-width="3"/>
+    <path d="M46 98V22h38c9 0 16 2 21 7c5 5 8 11 8 19c0 6-1 11-4 15c-2 3-6 6-10 7c5 2 9 5 12 9c3 5 5 10 5 17v-1c0 10-3 18-10 23c-7 5-16 9-29 9H46Zm22-46h15c5 0 9-1 11-3c2-2 3-5 3-9c0-4-1-7-3-9c-2-2-6-3-11-3H68v24Zm0 41h17c6 0 9-1 12-3c3-2 4-6 4-11c0-4-1-7-4-10c-3-2-7-3-13-3H68v27Z"
+          fill="#FFFFFF"/>
+  </g>
+
+  <!-- Title -->
+  <g transform="translate(84,270)">
+    <text x="0" y="0" fill="#FFFFFF" font-family="Montserrat, Arial, sans-serif" font-size="56" font-weight="900">
+      Custom Automation
+    </text>
+    <text x="0" y="58" fill="#FFFFFF" font-family="Montserrat, Arial, sans-serif" font-size="56" font-weight="900">
+      For Service Businesses
+    </text>
+    <rect x="0" y="92" width="320" height="6" fill="url(#g)" rx="3"/>
+  </g>
+
+  <!-- Bullets -->
+  <g transform="translate(84,450)" font-family="Montserrat, Arial, sans-serif" fill="#FFFFFF">
+    <g opacity="0.9" font-size="26" font-weight="700">
+      <text x="0" y="0">What I build</text>
+    </g>
+    <g opacity="0.78" font-size="22" font-weight="600">
+      <text x="0" y="54">Mobile lead dashboard</text>
+      <text x="0" y="98">Text and email automation</text>
+      <text x="0" y="142">Custom calculators and estimators</text>
+      <text x="0" y="186">Quote request pages if needed</text>
+    </g>
+  </g>
+
+  <!-- Footer CTA -->
+  <g transform="translate(84,870)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="912" height="120" rx="26" fill="#101010" stroke="url(#g)" stroke-width="2"/>
+    <text x="32" y="52" fill="#FFFFFF" font-family="Montserrat, Arial, sans-serif" font-size="24" font-weight="800" opacity="0.92">
+      RACZNIAK SYSTEMS
+    </text>
+    <text x="32" y="88" fill="#FFFFFF" font-family="Montserrat, Arial, sans-serif" font-size="20" font-weight="600" opacity="0.75">
+      DM to discuss your workflow and what’s worth automating
+    </text>
+    <circle cx="868" cy="60" r="16" fill="url(#g)"/>
+  </g>
+</svg>
+
+
+
+
