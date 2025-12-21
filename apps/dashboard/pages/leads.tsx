@@ -68,7 +68,7 @@ export default function LeadsInboxPage() {
 
     function buildFacebookMessage(lead: Lead) {
         const upgrades = (lead.optionalUpgrades || []).join(', ');
-        return `Hey ${lead.businessName} — quick question. I put together a tailored growth plan for ${lead.serviceType} in ${lead.serviceArea}. You mentioned: ${lead.goals?.join(', ') || 'more leads'}. If you want, I can send the plan + quick wins and we can implement only what you choose (${upgrades || 'ads / landing page / tracking'}). Want me to send it?`;
+        return `Hey ${lead.businessName} - quick question. I put together a tailored plan for ${lead.serviceType} in ${lead.serviceArea}. You mentioned: ${lead.goals?.join(', ') || 'more leads'}. If you want, I can send it over and we can implement only what you choose (${upgrades || 'GBP / Google Ads / landing page / tracking'}). Want me to send it?`;
     }
 
     return (

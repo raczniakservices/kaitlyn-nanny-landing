@@ -79,7 +79,7 @@ export default function TargetsPage({ rows }: Props) {
     const ga = (row.has_ga || '').toUpperCase() === 'TRUE';
     const trackingNote = (!gtm && !ga) ? `I also didn’t see Google Tag Manager / Analytics, so ad tracking is likely missing.` : '';
     return `Subject: Quick mobile fix for missed leads on ${row.business_name}
-Hi, I checked ${row.domain} on my phone. The contact form has ${row.form_inputs} fields and there's no fast "book now" option. Most people bounce at that point. ${trackingNote} I build a one‑tap quote widget you can add with a single line of code. It sends you the lead instantly, with photos. Want me to add it to your site for a week so you can see if it brings jobs? If text is easier, reply here and I’ll set it up. — Cody`;
+Hi, I checked ${row.domain} on my phone. The contact form has ${row.form_inputs} fields and there's no fast "book now" option. Most people bounce at that point. ${trackingNote} I build a one-tap quote widget you can add with a single line of code. It sends you the lead instantly, with photos. Want me to add it to your site for a week so you can see if it brings jobs? If text is easier, reply here and I'll set it up. - Cody`;
   }
 
   return (
@@ -88,7 +88,7 @@ Hi, I checked ${row.domain} on my phone. The contact form has ${row.form_inputs}
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
             <div className="text-xs font-extrabold tracking-widest text-slate-500">INTERNAL</div>
-            <h1 className="mt-2 text-3xl font-extrabold tracking-tight">InstantQuote — Top Targets</h1>
+          <h1 className="mt-2 text-3xl font-extrabold tracking-tight">InstantQuote - Top Targets</h1>
             <div className="mt-2 text-sm text-slate-600">
               Total rows: {rows.length}. Showing {filtered.length} after filters.
             </div>

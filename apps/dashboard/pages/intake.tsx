@@ -48,12 +48,9 @@ const SERVICE_TYPES = [
 const OPTIONAL_UPGRADES = [
     { id: 'gbp', label: 'Google Business Profile setup/optimization' },
     { id: 'google_ads', label: 'Google Ads setup + management' },
-    { id: 'meta_ads', label: 'Facebook/Instagram ads' },
-    { id: 'landing_page', label: 'Landing page build (high-converting)' },
-    { id: 'tracking', label: 'Tracking (GTM/GA/Conversions/Call tracking)' },
-    { id: 'automations', label: 'Automations (missed-call text-back, follow-up, reviews)' },
-    { id: 'website_fixes', label: 'Website fixes (speed/mobile/CTA/form simplification)' },
-    { id: 'not_sure', label: 'Not sure — recommend the best path' }
+    { id: 'tracking', label: 'Tracking (call tracking + conversions)' },
+    { id: 'landing_page', label: 'Landing page (optional, if your site does not convert)' },
+    { id: 'not_sure', label: 'Not sure - recommend the best path' }
 ] as const;
 
 type IntakePayload = {
@@ -244,7 +241,7 @@ export default function IntakePage() {
                     <div className="flex items-center justify-between gap-4">
                         <Link href="/" className="flex items-center gap-3">
                             <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-                                <Image src="/brand/profile-avatar.svg" alt="Raczniak Automations" fill priority />
+                                <Image src="/brand/profile-avatar.png" alt="Raczniak Automations" fill priority />
                             </div>
                             <div>
                                 <div className="text-sm font-extrabold">Raczniak Automations</div>
@@ -286,7 +283,7 @@ export default function IntakePage() {
     return (
         <>
             <Head>
-                <title>Free Growth Audit Intake — Raczniak Automations</title>
+                <title>Free Growth Audit Intake - Raczniak Automations</title>
                 <meta name="description" content="Answer a few questions and we’ll send a tailored plan to get more booked jobs (GBP, ads, landing page, tracking, automations)." />
             </Head>
 
@@ -298,7 +295,7 @@ export default function IntakePage() {
                     <div className="flex flex-wrap items-end justify-between gap-6">
                         <Link href="/" className="flex items-center gap-3">
                             <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-                                <Image src="/brand/profile-avatar.svg" alt="Raczniak Automations" fill priority />
+                                <Image src="/brand/profile-avatar.png" alt="Raczniak Automations" fill priority />
                             </div>
                             <div>
                                 <div className="text-sm font-extrabold tracking-tight">Raczniak Automations</div>
@@ -609,7 +606,7 @@ export default function IntakePage() {
                                 <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-white/70">
                                     <li>We review your answers + quick-scan your online presence.</li>
                                     <li>You get a tailored plan + fastest wins.</li>
-                                    <li>Upgrades are optional — pick what you want.</li>
+                                <li>Upgrades are optional - pick what you want.</li>
                                 </ul>
                             </div>
 

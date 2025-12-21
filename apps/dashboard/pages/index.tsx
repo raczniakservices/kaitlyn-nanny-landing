@@ -84,9 +84,9 @@ function Faq({ q, a }: { q: string; a: string }) {
 }
 
 export default function LandingPage() {
-  const title = 'Raczniak Automations — More booked jobs with GBP, Ads, Landing Pages & Automations';
+  const title = 'Raczniak Automations - Google Business Profile + Google Ads for more booked jobs';
   const description =
-    'We build a full lead engine for local service businesses: Google Business Profile optimization, high-converting landing pages, conversion tracking, Google/Facebook ads, and follow-up automations so leads don’t leak.';
+    'We help local service businesses get more calls from Google with Google Business Profile optimization and Google Ads. Optional landing page and conversion tracking available when needed.';
 
   return (
     <>
@@ -98,45 +98,39 @@ export default function LandingPage() {
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content="website" />
-        <meta property="og:image" content="/brand/facebook-cover.svg" />
+        <meta property="og:image" content="/brand/facebook-cover.png" />
 
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
-        <meta name="twitter:image" content="/brand/facebook-cover.svg" />
+        <meta name="twitter:image" content="/brand/facebook-cover.png" />
       </Head>
 
       <div className="min-h-screen bg-ink-950 text-white">
         <div className="absolute inset-0 bg-hero-radial" />
-        <div className="absolute inset-0 opacity-[0.18] [background-size:28px_28px] bg-grid-fade" />
+        <div className="absolute inset-0 opacity-[0.08] [background-size:28px_28px] bg-grid-fade" />
 
         <header className="relative">
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
             <Link href="/" className="flex items-center gap-3">
               <div className="relative h-10 w-10 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-                <Image src="/brand/profile-avatar.svg" alt="Raczniak Automations" fill priority />
+                <Image src="/brand/profile-avatar.png" alt="Raczniak Automations" fill priority />
               </div>
               <div>
                 <div className="text-sm font-extrabold tracking-tight">Raczniak Automations</div>
-                <div className="text-xs font-bold text-white/60">Baltimore-area service businesses</div>
+                <div className="text-xs font-bold text-white/60">Google growth for local services</div>
               </div>
             </Link>
 
             <div className="hidden items-center gap-4 md:flex">
-              <Link href="#services" className="text-sm font-extrabold text-white/70 hover:text-white">
-                Services
-              </Link>
-              <Link href="#process" className="text-sm font-extrabold text-white/70 hover:text-white">
-                Process
-              </Link>
-              <Link href="#faq" className="text-sm font-extrabold text-white/70 hover:text-white">
-                FAQ
-              </Link>
+              <Link href="#services" className="text-sm font-extrabold text-white/70 hover:text-white">GBP + Ads</Link>
+              <Link href="#process" className="text-sm font-extrabold text-white/70 hover:text-white">How it works</Link>
+              <Link href="#faq" className="text-sm font-extrabold text-white/70 hover:text-white">FAQ</Link>
               <Link
                 href="/intake"
                 className="inline-flex items-center gap-2 rounded-xl bg-brand-500 px-4 py-2 text-sm font-extrabold text-black shadow-glow hover:bg-brand-400"
               >
-                Get a free audit <ArrowRight className="h-4 w-4" />
+                Get a free Google audit <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -152,21 +146,16 @@ export default function LandingPage() {
                     <MapPin className="h-4 w-4 text-brand-200" /> Baltimore / DMV
                   </Pill>
                   <Pill>
-                    <Target className="h-4 w-4 text-brand-200" /> Built for booked jobs
-                  </Pill>
-                  <Pill>
-                    <Sparkles className="h-4 w-4 text-brand-200" /> Conversion-first
+                    <Target className="h-4 w-4 text-brand-200" /> Built for calls + booked jobs
                   </Pill>
                 </div>
 
                 <h1 className="mt-6 text-4xl font-extrabold tracking-tight md:text-5xl">
-                  Turn clicks into <span className="text-brand-300">booked jobs</span> — with a lead engine that doesn’t leak.
+                  Get more <span className="text-brand-300">calls from Google</span> with GBP + Google Ads done right.
                 </h1>
                 <p className="mt-5 text-base leading-relaxed text-white/75">
-                  We build and run the system: <b className="text-white">Google Business Profile</b>,{' '}
-                  <b className="text-white">high‑converting landing pages</b>, <b className="text-white">tracking</b>,{' '}
-                  <b className="text-white">Google/Facebook ads</b>, and <b className="text-white">follow‑up automations</b>.
-                  The goal is simple: more qualified leads, faster response, higher close rate.
+                  If your Google presence is leaking leads, we fix it. We optimize your <b className="text-white">Google Business Profile</b>, then run
+                  <b className="text-white"> Google Ads</b> that drive high-intent calls. If needed, we add a simple landing page and conversion tracking so you can measure ROI.
                 </p>
 
                 <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -174,21 +163,21 @@ export default function LandingPage() {
                     href="/intake"
                     className="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-500 px-6 py-3 text-sm font-extrabold text-black shadow-glow hover:bg-brand-400"
                   >
-                    Start the free audit <ArrowRight className="h-4 w-4" />
+                    Start the free Google audit <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
                     href="#services"
                     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-extrabold text-white hover:bg-white/10"
                   >
-                    See what we build <Gauge className="h-4 w-4" />
+                    See the plan <Gauge className="h-4 w-4" />
                   </Link>
                 </div>
 
                 <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <MiniStat icon={<Clock className="h-4 w-4" />} title="Fast wins" body="Fix the biggest leaks first" />
-                  <MiniStat icon={<BarChart3 className="h-4 w-4" />} title="Track ROI" body="Calls + forms + source" />
-                  <MiniStat icon={<Bot className="h-4 w-4" />} title="Automate" body="Text-back + follow-ups" />
-                  <MiniStat icon={<BadgeCheck className="h-4 w-4" />} title="Clean setup" body="No black-box magic" />
+                  <MiniStat icon={<Clock className="h-4 w-4" />} title="Fast wins" body="Fix the biggest Google leaks first" />
+                  <MiniStat icon={<BarChart3 className="h-4 w-4" />} title="Track ROI" body="Calls + leads + source" />
+                  <MiniStat icon={<BadgeCheck className="h-4 w-4" />} title="Clean setup" body="No spammy tactics" />
+                  <MiniStat icon={<Gauge className="h-4 w-4" />} title="Higher intent" body="Focus on buyers, not browsers" />
                 </div>
               </div>
 
@@ -197,32 +186,32 @@ export default function LandingPage() {
                 <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 p-6 shadow-soft backdrop-blur">
                   <div className="flex items-start justify-between gap-4">
                     <div>
-                      <div className="text-xs font-extrabold tracking-[0.22em] text-brand-200/80">FREE GROWTH AUDIT</div>
-                      <div className="mt-2 text-xl font-extrabold tracking-tight">We’ll show you exactly what to fix.</div>
+                      <div className="text-xs font-extrabold tracking-[0.22em] text-brand-200/80">FREE GOOGLE AUDIT</div>
+                      <div className="mt-2 text-xl font-extrabold tracking-tight">We’ll show you exactly what to fix in Google.</div>
                       <div className="mt-2 text-sm text-white/70">
-                        Answer a few questions and we’ll reply with a short plan + screenshots of your biggest conversion leaks.
+                        Answer a few questions and we’ll reply with a short plan for your GBP and Google Ads.
                       </div>
                     </div>
                     <div className="hidden h-12 w-12 overflow-hidden rounded-2xl border border-white/10 bg-black/40 md:block">
-                      <Image src="/brand/profile-avatar.svg" alt="" width={48} height={48} />
+                      <Image src="/brand/profile-avatar.png" alt="" width={48} height={48} />
                     </div>
                   </div>
 
                   <div className="mt-6 grid gap-3">
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                       <div className="flex items-center gap-2 text-sm font-extrabold">
-                        <PhoneCall className="h-4 w-4 text-brand-200" /> Tracking + call flow
+                        <PhoneCall className="h-4 w-4 text-brand-200" /> Calls-first setup
                       </div>
                       <div className="mt-1 text-sm text-white/70">
-                        We set up conversions so you can see what actually produces booked jobs.
+                        Your goal is booked jobs, so we optimize for calls and qualified leads.
                       </div>
                     </div>
                     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
                       <div className="flex items-center gap-2 text-sm font-extrabold">
-                        <MessageCircle className="h-4 w-4 text-brand-200" /> Facebook-first outreach option
+                        <MessageCircle className="h-4 w-4 text-brand-200" /> Simple, clear plan
                       </div>
                       <div className="mt-1 text-sm text-white/70">
-                        If you prefer, we’ll message your page first instead of cold calling.
+                        You’ll get a short checklist of fixes and the ad approach that makes sense for your area.
                       </div>
                     </div>
                   </div>
@@ -234,16 +223,10 @@ export default function LandingPage() {
                     >
                       Start intake <ArrowRight className="h-4 w-4" />
                     </Link>
-                    <Link
-                      href="/automations"
-                      className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-extrabold text-white hover:bg-white/10"
-                    >
-                      See our automation demos <ArrowRight className="h-4 w-4" />
-                    </Link>
                   </div>
 
                   <div className="mt-4 text-xs text-white/55">
-                    Tip: if you already have a GBP/website, include the link in intake so we can audit it faster.
+                    Tip: if you already have a Google Business Profile link, include it in intake so we can audit it faster.
                   </div>
                 </div>
               </div>
@@ -253,31 +236,31 @@ export default function LandingPage() {
           {/* SERVICES */}
           <section id="services" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
             <SectionTitle
-              eyebrow="WHAT WE BUILD"
-              title="Everything your ads need to convert (and prove it)."
-              body="Most campaigns fail because the landing page leaks, tracking is missing, response is slow, and follow-up is inconsistent. We fix the whole chain."
+              eyebrow="WHAT WE DO"
+              title="Google Business Profile + Google Ads, built to drive booked jobs."
+              body="Most campaigns fail because GBP is misconfigured, ads are set up wrong, and conversions aren't tracked. We keep it tight and focused on Google."
             />
 
             <div className="mt-10 grid gap-4 md:grid-cols-2">
               <Card
                 title="Google Business Profile (GBP)"
-                body="Setup, cleanup, categories, services, photos, posts, offers—built to rank and convert calls."
+                body="Setup, cleanup, categories, services, photos, posts, and a conversion-first profile that ranks and drives calls."
                 icon={<MapPin className="h-5 w-5" />}
               />
               <Card
-                title="High-converting landing pages"
-                body="Fast, mobile-first, persuasive pages built for leads—not pretty portfolios. Forms that qualify."
-                icon={<Sparkles className="h-5 w-5" />}
+                title="Google Ads management"
+                body="Search campaigns built around real buyer intent in your service area. We track calls/leads and optimize for booked jobs."
+                icon={<Target className="h-5 w-5" />}
               />
               <Card
-                title="Conversion tracking (GTM/GA/Ads)"
-                body="Calls + forms + source attribution so we can scale what works and cut what doesn’t."
+                title="Conversion tracking (optional)"
+                body="If you need it: call tracking and conversion tracking so you know what's producing jobs, not just clicks."
                 icon={<BarChart3 className="h-5 w-5" />}
               />
               <Card
-                title="Follow-up automations"
-                body="Missed-call text-back, quote follow-ups, review requests, simple CRM workflows that stop leakage."
-                icon={<Bot className="h-5 w-5" />}
+                title="Landing page (optional)"
+                body="When your site doesn't convert, we build a simple, fast page designed to turn Google traffic into leads."
+                icon={<Sparkles className="h-5 w-5" />}
               />
             </div>
           </section>
@@ -286,15 +269,15 @@ export default function LandingPage() {
           <section id="process" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
             <SectionTitle
               eyebrow="PROCESS"
-              title="Tight loop: audit → fix leaks → launch → measure → scale."
-              body="We don’t start by “running ads.” We start by building a funnel that can actually convert—and then we scale it with tracking."
+              title="Tight loop: audit -> fix leaks -> launch -> measure -> scale."
+              body="We start with your Google foundation (GBP), then we launch Ads only after the basics are right."
             />
 
             <div className="mt-10 grid gap-4 md:grid-cols-4">
-              <StepCard step="01" title="Audit" body="We scan your site/GBP and identify the biggest conversion leaks." />
-              <StepCard step="02" title="Build" body="Landing page + tracking + forms + call flow. Fast." />
-              <StepCard step="03" title="Launch" body="Google Search / LSA / Meta — based on your service + area." />
-              <StepCard step="04" title="Scale" body="Optimize to booked jobs. Kill waste. Expand what works." />
+              <StepCard step="01" title="Audit Google" body="We review your GBP and your current Ads (if any) for the biggest leaks." />
+              <StepCard step="02" title="Fix GBP" body="Categories, services, photos, posts, and conversion-focused setup." />
+              <StepCard step="03" title="Launch Ads" body="Search campaigns for buyers in your area, optimized for calls/leads." />
+              <StepCard step="04" title="Scale" body="Measure results, cut waste, and expand what works." />
             </div>
           </section>
 
@@ -303,7 +286,7 @@ export default function LandingPage() {
             <SectionTitle
               eyebrow="FAQ"
               title="Quick answers, no fluff."
-              body="If you have a specific niche or location, include it in intake so we can tailor the plan on the first message."
+              body="If you have a GBP link, include it in intake so we can tailor the plan on the first message."
             />
 
             <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -311,12 +294,12 @@ export default function LandingPage() {
                 q="Do you only work with Baltimore businesses?"
                 a="Baltimore is the starting focus, but the system works anywhere. If you’re outside the area, submit anyway and we’ll confirm fit."
               />
-              <Faq q="Can you just do GBP and not ads?" a="Yes. GBP-only is common. We’ll recommend the fastest path based on your current setup." />
+              <Faq q="Can you do GBP only (no ads)?" a="Yes. GBP-only is common. We'll recommend the fastest path based on your current setup." />
               <Faq
                 q="What if we already have a website?"
-                a="Perfect. We can optimize the existing site—or build a conversion-focused landing page that outperforms it."
+                a="Perfect. We'll use it if it converts. If it doesn't, we can build a simple landing page just for Google traffic."
               />
-              <Faq q="How do you contact us?" a="Facebook message by default (your choice), but you can choose text/email/phone in the intake." />
+              <Faq q="What do you need from me to start?" a="Your service area, your GBP link (if you have one), and your goals. That's it." />
             </div>
 
             <div className="mt-12 overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-soft backdrop-blur">
@@ -325,7 +308,7 @@ export default function LandingPage() {
                   <div className="text-xs font-extrabold tracking-[0.22em] text-brand-200/80">NEXT STEP</div>
                   <div className="mt-2 text-2xl font-extrabold tracking-tight">Get the free audit + plan.</div>
                   <div className="mt-3 text-sm leading-relaxed text-white/70">
-                    We’ll reply with your quickest wins: what to change, what to track, and the simplest campaign that can start producing booked jobs.
+                    We'll reply with your quickest wins for GBP and Google Ads, and the simplest campaign that can start producing booked jobs.
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
@@ -336,13 +319,10 @@ export default function LandingPage() {
                     Start intake <ArrowRight className="h-4 w-4" />
                   </Link>
                   <Link
-                    href="/automations"
+                    href="#services"
                     className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3 text-sm font-extrabold text-white hover:bg-white/10"
                   >
-                    View demos <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <Link href="/admin/targets" className="text-center text-xs font-extrabold text-white/40 hover:text-white/70">
-                    Internal (targets)
+                    See what you get <ArrowRight className="h-4 w-4" />
                   </Link>
                 </div>
               </div>
@@ -355,19 +335,17 @@ export default function LandingPage() {
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <div className="relative h-9 w-9 overflow-hidden rounded-xl border border-white/10 bg-black/40">
-                  <Image src="/brand/profile-avatar.svg" alt="" fill />
+                  <Image src="/brand/profile-avatar.png" alt="" fill />
                 </div>
                 <div>
                   <div className="text-sm font-extrabold">Raczniak Automations</div>
-                  <div className="text-xs text-white/55">Landing pages • tracking • ads • automations</div>
+                  <div className="text-xs text-white/55">Google Business Profile + Google Ads</div>
                 </div>
               </div>
               <div className="flex flex-wrap gap-4 text-xs font-extrabold text-white/55">
-                <Link href="#services" className="hover:text-white">
-                  Services
-                </Link>
+                <Link href="#services" className="hover:text-white">GBP + Ads</Link>
                 <Link href="#process" className="hover:text-white">
-                  Process
+                  How it works
                 </Link>
                 <Link href="/intake" className="hover:text-white">
                   Intake
