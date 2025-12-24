@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "generated_at": "2025-12-22T00:00:00.000Z",
+    "mode": "manual"
+  },
+  "input": {
+    "business_name": "Hood Masters LLC",
+    "location_hint": "Baltimore County, MD",
+    "phone": "(443) 307-3480",
+    "website": null,
+    "suspected_wrong_category": "Pressure washing service",
+    "expected_categories": [
+      "Commercial kitchen hood cleaning",
+      "Kitchen exhaust cleaning service",
+      "Ventilation cleaning service"
+    ]
+  },
+  "manual_mode": {
+    "enabled": true,
+    "inputs": {
+      "ask_for_reviews_url": null,
+      "maps_url": null,
+      "cid": null,
+      "extracted_place_id": null
+    }
+  },
+  "candidates": [],
+  "selected_place": null,
+  "category_mismatch": null,
+  "collision": {
+    "collision_risk": null,
+    "collision_candidates": [],
+    "disambiguation_name_suggestions": []
+  },
+  "throttle": {
+    "flags": {
+      "zero_reviews": null,
+      "collision_risk": null,
+      "category_mismatch": null,
+      "service_area_only_unknown": true
+    },
+    "severity": "UNKNOWN"
+  },
+  "next_actions": [
+    "Provide a Google Places API key to run API mode diagnostics.",
+    "Paste the GBP 'Ask for reviews' link into config as ask_for_reviews_url.",
+    "Paste the Maps URL from clicking the listing into config as maps_url."
+  ],
+  "acceptance_checks": [
+    "Places API returns a single best match with matching phone/website.",
+    "Collision risk reduced (fewer close-name candidates).",
+    "Review count transitions from 0 to 1 (later).",
+    "Maps and write-review URLs consistently resolve."
+  ]
+}
+
+
+

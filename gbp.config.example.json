@@ -1,0 +1,16 @@
+{
+  "business_name": "Hood Masters LLC",
+  "location_hint": "Baltimore County, MD",
+  "phone": "(443) 307-3480",
+  "website": "https://example.com",
+  "suspected_wrong_category": "Pressure washing service",
+  "expected_categories": [
+    "Commercial kitchen hood cleaning",
+    "Kitchen exhaust cleaning service",
+    "Ventilation cleaning service"
+  ],
+  "google_places_api_key": ""
+}
+
+
+

@@ -230,6 +230,47 @@ npm run lint
 - Check network connectivity
 - Review failed URLs in console output
 
+---
+
+## GBP Diagnostics (Google Business Profile / review link troubleshooting)
+
+This repo includes a small CLI tool that helps diagnose common causes of unstable/missing review links or Maps visibility when a GBP exists and is managed.
+
+### What it checks (official APIs only)
+- Place identity discovery via **Google Places API** (Find Place / Text Search / Details)
+- **Category/type mismatch** proxy detection (via Places `types`)
+- **Entity collision / name confusion** signals (multiple similar-name places in different states/domains)
+- **Low-trust / throttle likelihood** heuristics (review-less + mismatch + collision)
+
+### Setup
+
+1) Create a Places API key (Google Maps Platform) and enable **Places API**.
+
+2) Put your key in either:
+- A config JSON field: `google_places_api_key`
+- Or a `.env` file at repo root:
+
+```bash
+GOOGLE_PLACES_API_KEY=YOUR_KEY_HERE
+```
+
+### Run (PowerShell-safe)
+
+```bash
+node src/gbp_diagnostics.js --config gbp.config.example.json
+```
+
+Outputs are written (overwritten each run) to:
+- `./output/report.json`
+- `./output/report.md`
+
+### Manual mode (no API key)
+If no key is present, the tool will still generate a report and tell you what URLs to paste:
+- The GBP **Ask for reviews** link
+- The Maps URL from clicking the listing
+- Any `cid=` value you can find
+
+
 ## 📈 Performance Tuning
 
 - **Concurrency**: Start with 2, increase carefully to avoid rate limiting

@@ -4,11 +4,47 @@ services:
     runtime: node
     plan: starter
     rootDir: apps/dashboard
-    buildCommand: npm install --no-audit --no-fund && npm run build
+    buildCommand: npm install --no-audit --no-fund --workspaces=false && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_VERSION
         value: 20.11.1
       - key: NPM_CONFIG_PRODUCTION
         value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: company-lead-finder-postgres
+          property: connectionString
+      # Basic auth for /admin (recommended in production)
+      # - key: ADMIN_BASIC_USER
+      #   value: "kaitlyn"
+      # - key: ADMIN_BASIC_PASS
+      #   sync: false
 
+  - type: web
+    name: kaitlyn-nanny-landing
+    runtime: node
+    plan: starter
+    rootDir: apps/kaitlyn-nanny
+    buildCommand: npm install --no-audit --no-fund --workspaces=false && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_VERSION
+        value: 20.11.1
+      - key: NPM_CONFIG_PRODUCTION
+        value: "false"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: company-lead-finder-postgres
+          property: connectionString
+      # Optional email sending via Resend (recommended)
+      # - key: RESEND_API_KEY
+      #   sync: false
+      # - key: KAITLYN_INTAKE_TO
+      #   value: "kaitlyn@example.com"
+      # - key: KAITLYN_INTAKE_FROM
+      #   value: "Caitlyn Intake <intake@yourdomain.com>"
+
+databases:
+  - name: company-lead-finder-postgres
+    plan: starter

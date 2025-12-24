@@ -68,7 +68,7 @@ export default function LeadsInboxPage() {
 
     function buildFacebookMessage(lead: Lead) {
         const upgrades = (lead.optionalUpgrades || []).join(', ');
-        return `Hey ${lead.businessName} - quick question. I put together a tailored plan for ${lead.serviceType} in ${lead.serviceArea}. You mentioned: ${lead.goals?.join(', ') || 'more leads'}. If you want, I can send it over and we can implement only what you choose (${upgrades || 'GBP / Google Ads / landing page / tracking'}). Want me to send it?`;
+        return `Hey ${lead.businessName} — quick question. I put together a tailored growth plan for ${lead.serviceType} in ${lead.serviceArea}. You mentioned: ${lead.goals?.join(', ') || 'more leads'}. If you want, I can send the plan + quick wins and we can implement only what you choose (${upgrades || 'ads / landing page / tracking'}). Want me to send it?`;
     }
 
     return (
@@ -82,19 +82,18 @@ export default function LeadsInboxPage() {
                 </div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                     <a href="/intake" style={{ color: '#2563eb', fontWeight: 800 }}>Open intake page →</a>
-                    <a href="/" style={{ color: '#111827', fontWeight: 800 }}>Public landing</a>
-                    <a href="/admin/targets" style={{ color: '#111827', fontWeight: 800 }}>Targets</a>
+                    <a href="/" style={{ color: '#111827', fontWeight: 800 }}>Dashboard</a>
                 </div>
             </div>
 
             <div style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
                 <input
                     value={q}
-                    onChange={(e) => setQ(e.currentTarget.value)}
+                    onChange={e => setQ(e.target.value)}
                     placeholder="Search leads (name, service, area, etc.)"
                     style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db', minWidth: 320 }}
                 />
-                <select value={contactFilter} onChange={(e) => setContactFilter(e.currentTarget.value)} style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db' }}>
+                <select value={contactFilter} onChange={e => setContactFilter(e.target.value)} style={{ padding: 10, borderRadius: 12, border: '1px solid #d1d5db' }}>
                     <option value="">All contact methods</option>
                     <option value="facebook">Facebook</option>
                     <option value="text">Text</option>

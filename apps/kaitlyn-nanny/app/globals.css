@@ -1,0 +1,273 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Bold Premium Palette */
+  --bg: 330 30% 92%;           /* vibrant soft pink background */
+  --surface: 0 0% 100%;         /* pure white cards */
+  --text: 340 50% 20%;         /* deep rich text */
+  --muted: 340 25% 50%;        /* readable muted */
+  --border: 340 30% 82%;       /* visible borders */
+
+  --accent: 340 85% 60%;       /* BOLD vibrant rose */
+  --accent-hover: 340 80% 55%; /* deeper rose */
+  --accent-deep: 340 75% 45%;  /* rich deep rose */
+  --gold: 45 80% 60%;          /* rich gold */
+  --lavender: 280 60% 70%;     /* vibrant lavender */
+}
+
+html,
+body {
+  height: 100%;
+  min-height: 100vh;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: light;
+  background-color: hsl(var(--bg));
+}
+
+body {
+  color: hsl(var(--text));
+  min-height: 100vh;
+  background-color: hsl(var(--bg));
+  background:
+    radial-gradient(1000px 800px at 15% 8%, hsl(var(--accent))/12 0%, transparent 58%),
+    radial-gradient(1100px 900px at 85% 50%, hsl(var(--lavender))/10 0%, transparent 60%),
+    radial-gradient(1200px 1000px at 50% 92%, hsl(var(--gold))/8 0%, transparent 65%),
+    linear-gradient(180deg, hsl(var(--bg)) 0%, hsl(330 20% 86%) 50%, hsl(330 22% 84%) 100%);
+  background-attachment: scroll;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(800px 550px at 15% 15%, hsl(var(--accent))/15 0%, transparent 55%),
+    radial-gradient(850px 650px at 85% 50%, hsl(var(--lavender))/14 0%, transparent 58%),
+    radial-gradient(900px 750px at 55% 80%, hsl(var(--gold))/10 0%, transparent 62%);
+  opacity: 0.5;
+  filter: blur(40px);
+  transform: translate3d(0, 0, 0);
+  animation: aurora-drift 20s ease-in-out infinite;
+}
+
+/* Soft vignette to add depth without darkening too much */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1200px 900px at 50% 20%, transparent 0%, transparent 60%, hsl(240 15% 20%)/6 100%),
+    radial-gradient(1400px 1100px at 50% 80%, transparent 0%, transparent 55%, hsl(240 15% 20%)/8 100%),
+    /* ultra-subtle texture */
+    repeating-linear-gradient(
+      135deg,
+      hsla(0, 0%, 100%, 0.02) 0px,
+      hsla(0, 0%, 100%, 0.02) 1px,
+      hsla(0, 0%, 100%, 0.0) 2px,
+      hsla(0, 0%, 100%, 0.0) 6px
+    );
+  opacity: 1;
+}
+
+@keyframes aurora-drift {
+  0% {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+    opacity: 0.45;
+  }
+  50% {
+    transform: translate3d(1.5%, 1.2%, 0) scale(1.06);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
+    opacity: 0.5;
+  }
+}
+
+::selection {
+  background: hsl(var(--accent))/35;
+}
+
+/* Animations */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  body::before {
+    animation: none;
+  }
+  body::after {
+    animation: none;
+  }
+  .animate-gentle-float,
+  .animate-slide-up,
+  .animate-fade-in {
+    animation: none !important;
+  }
+}
+
+/* Subtle “premium sheen” for selected choice cards */
+@keyframes choice-sheen {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.choice-selected {
+  background-size: 200% 200%;
+  animation: choice-sheen 6.5s ease-in-out infinite;
+}
+
+/* Make native controls feel branded */
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: hsl(var(--accent-deep));
+}
+
+/* Fix autocomplete background color issues */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px hsl(var(--surface)) inset !important;
+  -webkit-text-fill-color: hsl(var(--text)) !important;
+  background-color: hsl(var(--surface)) !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    box-shadow: 0 0 0 0 hsla(var(--accent), 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px hsla(var(--accent), 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out;
+}
+
+.animate-gentle-float {
+  animation: gentle-float 6s ease-in-out infinite;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.5s ease-out;
+}
+
+/* Smooth transitions for all interactive elements */
+input, select, textarea, button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Force white backgrounds on form inputs */
+input:not([type="radio"]):not([type="checkbox"]),
+select,
+textarea {
+  background-color: white !important;
+  color-scheme: light !important;
+}
+
+.bg-size-200 {
+  background-size: 200% auto;
+}
+
+.bg-pos-0 {
+  background-position: left center;
+}
+
+.bg-pos-100 {
+  background-position: right center;
+}
+
+/* Enhanced focus states */
+input:focus, select:focus, textarea:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+@keyframes focus-glow {
+  0% {
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08), 0 0 0 0 hsla(var(--accent-deep), 0.18);
+  }
+  100% {
+    box-shadow: 0 10px 26px rgba(17, 24, 39, 0.12), 0 0 0 6px hsla(var(--accent-deep), 0);
+  }
+}
+
+input:focus, select:focus, textarea:focus {
+  animation: focus-glow 700ms ease-out;
+}
+
+/* Button hover effects */
+button:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+button:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Radio and checkbox animations */
+input[type="radio"]:checked,
+input[type="checkbox"]:checked {
+  animation: pulse-soft 0.6s ease;
+}
+
+/* Card hover effects */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12) !important;
+}
+
+
