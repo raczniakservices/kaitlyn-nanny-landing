@@ -61,8 +61,8 @@ export default function Page() {
                 <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">TRUST</p>
                 <ul className="mt-3 space-y-2 text-sm font-semibold text-[hsl(var(--text))]/90">
                   <li>Professional childcare experience: 3+ years</li>
-                  <li>Trusted with a classroom-sized group (up to 16 kids, ages 6–10) almost every day</li>
-                  <li>School transportation driver (Celebree) — safety-focused and dependable</li>
+                  <li>Trusted with a classroom-sized group (up to 16 kids, ages 6-10) almost every day</li>
+                  <li>School transportation driver (Celebree) - safety-focused and dependable</li>
                 </ul>
                 <p className="mt-4 text-xs text-[hsl(var(--muted))]">References available upon request.</p>
               </div>

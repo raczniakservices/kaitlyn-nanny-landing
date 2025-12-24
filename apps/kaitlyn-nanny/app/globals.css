@@ -37,57 +37,7 @@ body {
     radial-gradient(1100px 900px at 85% 50%, hsl(var(--lavender))/10 0%, transparent 60%),
     radial-gradient(1200px 1000px at 50% 92%, hsl(var(--gold))/8 0%, transparent 65%),
     linear-gradient(180deg, hsl(var(--bg)) 0%, hsl(330 20% 86%) 50%, hsl(330 22% 84%) 100%);
-  background-attachment: scroll;
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(800px 550px at 15% 15%, hsl(var(--accent))/15 0%, transparent 55%),
-    radial-gradient(850px 650px at 85% 50%, hsl(var(--lavender))/14 0%, transparent 58%),
-    radial-gradient(900px 750px at 55% 80%, hsl(var(--gold))/10 0%, transparent 62%);
-  opacity: 0.5;
-  filter: blur(40px);
-  transform: translate3d(0, 0, 0);
-  animation: aurora-drift 20s ease-in-out infinite;
-}
-
-/* Soft vignette to add depth without darkening too much */
-body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(1200px 900px at 50% 20%, transparent 0%, transparent 60%, hsl(240 15% 20%)/6 100%),
-    radial-gradient(1400px 1100px at 50% 80%, transparent 0%, transparent 55%, hsl(240 15% 20%)/8 100%),
-    /* ultra-subtle texture */
-    repeating-linear-gradient(
-      135deg,
-      hsla(0, 0%, 100%, 0.02) 0px,
-      hsla(0, 0%, 100%, 0.02) 1px,
-      hsla(0, 0%, 100%, 0.0) 2px,
-      hsla(0, 0%, 100%, 0.0) 6px
-    );
-  opacity: 1;
-}
-
-@keyframes aurora-drift {
-  0% {
-    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
-    opacity: 0.45;
-  }
-  50% {
-    transform: translate3d(1.5%, 1.2%, 0) scale(1.06);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translate3d(-1.5%, -1%, 0) scale(1.02);
-    opacity: 0.5;
-  }
+  background-attachment: fixed;
 }
 
 ::selection {
@@ -116,12 +66,6 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body::before {
-    animation: none;
-  }
-  body::after {
-    animation: none;
-  }
   .animate-gentle-float,
   .animate-slide-up,
   .animate-fade-in {
