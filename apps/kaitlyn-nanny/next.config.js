@@ -1,7 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: "standalone",
+  // Remove standalone output - causes issues with Render static file serving
+  // output: "standalone",
   webpack: (config, { dev }) => {
     // On Windows, webpack persistent caching can occasionally corrupt `.next` output
     // causing missing chunk/module errors (e.g. "Cannot find module './407.js'").
