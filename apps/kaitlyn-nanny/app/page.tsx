@@ -7,9 +7,7 @@ export default function Page() {
   return (
     <main>
       <NavBar
-        items={[
-          { label: "Request care", href: "#care-form" }
-        ]}
+        items={[]}
         primaryCtaHref="#care-form"
       />
 
