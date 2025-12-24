@@ -56,19 +56,19 @@ export function NavBar({
     <div
       className={cn(
         "sticky top-0 z-50 w-full",
-        "bg-bg/70 backdrop-blur",
-        scrolled && "border-b border-border"
+        "bg-[hsl(var(--bg))]/70 backdrop-blur",
+        scrolled && "border-b border-[hsl(var(--border))]"
       )}
     >
       <Container>
         <div className="flex h-16 items-center justify-between">
           <a href="#" className="group inline-flex items-center gap-2">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-sm font-bold text-text shadow-sm">
+            <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[hsl(var(--accent))] text-sm font-bold text-[hsl(var(--text))] shadow-sm">
               K
             </span>
             <span className="leading-tight">
-              <span className="block text-sm font-semibold text-text">Kaitlyn Noel Raczniak</span>
-              <span className="block text-xs text-muted">In-home childcare</span>
+              <span className="block text-sm font-semibold text-[hsl(var(--text))]">Kaitlyn Noel Raczniak</span>
+              <span className="block text-xs text-[hsl(var(--muted))]">In-home childcare</span>
             </span>
           </a>
 
@@ -77,7 +77,7 @@ export function NavBar({
               <a
                 key={item.href}
                 href={item.href}
-                className="text-sm font-semibold text-muted transition-colors hover:text-text"
+                className="text-sm font-semibold text-[hsl(var(--muted))] transition-colors hover:text-[hsl(var(--text))]"
               >
                 {item.label}
               </a>
@@ -94,7 +94,7 @@ export function NavBar({
                 <Button
                   variant="outline"
                   size="sm"
-                  className="lg:hidden bg-white text-text border-border"
+                  className="lg:hidden bg-white text-[hsl(var(--text))] border-[hsl(var(--border))]"
                   aria-label="Open menu"
                 >
                   <IconMenu className="h-5 w-5" />
@@ -102,13 +102,13 @@ export function NavBar({
               </SheetTrigger>
 
               <SheetContent className="p-0">
-                <div className="flex items-center justify-between border-b border-border p-5">
-                  <p className="text-sm font-semibold text-text">Menu</p>
+                <div className="flex items-center justify-between border-b border-[hsl(var(--border))] p-5">
+                  <p className="text-sm font-semibold text-[hsl(var(--text))]">Menu</p>
                   <SheetClose asChild>
                     <Button
                       variant="outline"
                       size="sm"
-                      className="bg-white text-text border-border"
+                      className="bg-white text-[hsl(var(--text))] border-[hsl(var(--border))]"
                       aria-label="Close menu"
                     >
                       <IconX className="h-5 w-5" />
@@ -122,7 +122,7 @@ export function NavBar({
                       <SheetClose asChild key={item.href}>
                         <a
                           href={item.href}
-                          className="rounded-xl border border-border bg-bg px-4 py-3 text-sm font-semibold text-text transition-colors hover:bg-white"
+                          className="rounded-xl border border-[hsl(var(--border))] bg-[hsl(var(--bg))] px-4 py-3 text-sm font-semibold text-[hsl(var(--text))] transition-colors hover:bg-white"
                         >
                           {item.label}
                         </a>
@@ -136,9 +136,9 @@ export function NavBar({
                     </Button>
                   </SheetClose>
 
-                  <p className="mt-4 text-xs text-muted">
+                  <p className="mt-4 text-xs text-[hsl(var(--muted))]">
                     Availability is currently weekends only. If your schedule is flexible, include details in the request
-                    and I’ll respond as soon as I’m available.
+                    and I&apos;ll respond as soon as I&apos;m available.
                   </p>
                 </div>
               </SheetContent>
