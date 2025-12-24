@@ -1,16 +1,10 @@
 import { IntakeForm } from "../components/IntakeForm";
 import { Container } from "../components/Container";
-import { NavBar } from "../components/NavBar";
 import { Reveal } from "../components/Reveal";
 
 export default function Page() {
   return (
     <main>
-      <NavBar
-        items={[]}
-        primaryCtaHref="#care-form"
-      />
-
       <section id="care-form" className="py-10 sm:py-14 min-h-screen">
         <Container>
           <div className="mx-auto max-w-3xl">
@@ -25,9 +19,6 @@ export default function Page() {
                         alt="Kaitlyn Raczniak"
                         className="h-full w-full object-cover"
                       />
-                    </div>
-                    <div className="absolute -bottom-2 -right-2 rounded-full bg-white px-3 py-1 shadow-lg border-2 border-[hsl(var(--accent))]/20">
-                      <span className="text-xs font-bold text-[hsl(var(--accent-deep))]">Bel Air, MD</span>
                     </div>
                   </div>
                 </div>
@@ -45,24 +36,37 @@ export default function Page() {
             {/* Quick Info Cards - Simplified */}
             <div id="availability" className="mb-10 grid gap-3 sm:grid-cols-3">
               <Reveal delay={0.05}>
-                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
-                  <p className="text-sm font-bold text-[hsl(var(--text))]">Weekends Only</p>
+                <div className="min-h-[84px] rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center flex flex-col items-center justify-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">Weekend availability</p>
                   <p className="mt-1 text-xs text-[hsl(var(--muted))]">Fri night – Sunday</p>
                 </div>
               </Reveal>
               <Reveal delay={0.1}>
-                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
-                  <p className="text-sm font-bold text-[hsl(var(--text))]">Quick Response</p>
+                <div className="min-h-[84px] rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center flex flex-col items-center justify-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">Quick response</p>
                   <p className="mt-1 text-xs text-[hsl(var(--muted))]">Usually within 24 hours</p>
                 </div>
               </Reveal>
               <Reveal delay={0.15}>
-                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
-                  <p className="text-sm font-bold text-[hsl(var(--text))]">Experienced Care</p>
-                  <p className="mt-1 text-xs text-[hsl(var(--muted))]">Professional & warm</p>
+                <div className="min-h-[84px] rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center flex flex-col items-center justify-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">In-home childcare</p>
+                  <p className="mt-1 text-xs text-[hsl(var(--muted))]">Calm, reliable, professional</p>
                 </div>
               </Reveal>
             </div>
+
+            {/* Trust details (testimonials will go here next) */}
+            <Reveal delay={0.2}>
+              <div className="mb-10 rounded-2xl border border-[hsl(var(--border))] bg-white/90 p-6 shadow-sm">
+                <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">TRUST</p>
+                <ul className="mt-3 space-y-2 text-sm font-semibold text-[hsl(var(--text))]/90">
+                  <li>Professional childcare experience: 3+ years</li>
+                  <li>Trusted with a classroom-sized group (up to 16 kids, ages 6–10) almost every day</li>
+                  <li>School transportation driver (Celebree) — safety-focused and dependable</li>
+                </ul>
+                <p className="mt-4 text-xs text-[hsl(var(--muted))]">References available upon request.</p>
+              </div>
+            </Reveal>
 
             <IntakeForm />
           </div>

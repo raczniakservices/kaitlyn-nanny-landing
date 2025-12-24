@@ -413,7 +413,7 @@ function validateAll(v: FormValues): ClientErrors {
         e.allergiesNotes = "Please provide details.";
     }
 
-    if (!v.budgetRange) e.budgetRange = "Please select a budget range.";
+    // Budget is optional; we collect it for context only.
 
     return e;
 }
@@ -828,7 +828,7 @@ export function IntakeForm() {
                                     <option value="Recurring weekends">Recurring weekends</option>
                                     <option value="Not sure">Not sure yet</option>
                                 </Select>
-                                <Hint>Availability: Fri (start after 7pm), Sat (anytime), Sun (end by 10pm). Weekdays opening soon.</Hint>
+                                <Hint>Availability is currently weekends only.</Hint>
                                 <FieldError msg={clientErrors.careType} />
                             </div>
 
@@ -848,7 +848,7 @@ export function IntakeForm() {
                                             </option>
                                         ))}
                                     </Select>
-                                    <Hint>Available dates are Friday/Saturday/Sunday only (next 6 months).</Hint>
+                                    <Hint>Available dates shown are within the next 6 months.</Hint>
                                     <FieldError msg={clientErrors.oneTimeDate} />
                                 </div>
                             )}
@@ -1082,23 +1082,22 @@ export function IntakeForm() {
                     </SectionCard>
 
                     {/* Budget */}
-                    <SectionCard title="Budget">
+                    <SectionCard title="Budget (optional)">
                         <div className="space-y-4">
                             <div>
-                                <FieldLabel required>Budget range (per hour)</FieldLabel>
+                                <FieldLabel>Budget range (per hour)</FieldLabel>
                                 <Select
                                     name="budgetRange"
                                     value={values.budgetRange}
                                     onChange={(e) => setValues((v) => ({ ...v, budgetRange: e.target.value as any }))}
                                 >
-                                    <option value="">Select…</option>
+                                    <option value="">Prefer to discuss</option>
                                     <option value="$27-$30/hr">$27-$30/hr</option>
                                     <option value="$30-$35/hr">$30-$35/hr</option>
                                     <option value="$35+/hr">$35+/hr</option>
                                     <option value="Not sure">Not sure, want your rate</option>
                                 </Select>
-                                <Hint>Kaitlyn&apos;s minimum is $27/hr</Hint>
-                                <FieldError msg={clientErrors.budgetRange} />
+                                <Hint>Optional. If you have constraints, sharing a range helps.</Hint>
                             </div>
                         </div>
                     </SectionCard>
@@ -1119,10 +1118,9 @@ export function IntakeForm() {
 
                     <SubmitButton />
 
-                    <div className="mt-6 rounded-2xl bg-gradient-to-br from-[hsl(var(--accent))]/15 to-[hsl(var(--lavender))]/12 p-5 text-center border-2 border-[hsl(var(--accent))]/30">
-                        <p className="text-xs font-bold uppercase tracking-wider text-[hsl(var(--text))]">Privacy Promise</p>
-                        <p className="mt-2 text-xs leading-relaxed text-[hsl(var(--text))]">Your information goes directly to Kaitlyn. No spam, ever.</p>
-                    </div>
+                    <p className="mt-4 text-center text-xs text-[hsl(var(--muted))]">
+                        Your information goes directly to Kaitlyn. No spam, ever.
+                    </p>
                 </form>
             </div>
 
