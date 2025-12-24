@@ -85,10 +85,6 @@ export function NavBar({
           </nav>
 
           <div className="flex items-center gap-2">
-            <Button asChild variant="dark" size="sm" className="hidden sm:inline-flex">
-              <a href={primaryCtaHref}>Send inquiry</a>
-            </Button>
-
             <Sheet>
               <SheetTrigger asChild>
                 <Button
@@ -129,12 +125,6 @@ export function NavBar({
                       </SheetClose>
                     ))}
                   </div>
-
-                  <SheetClose asChild>
-                    <Button asChild variant="dark" size="lg" className="mt-4 w-full">
-                      <a href={primaryCtaHref}>Send inquiry</a>
-                    </Button>
-                  </SheetClose>
 
                   <p className="mt-4 text-xs text-[hsl(var(--muted))]">
                     Availability is currently weekends only. If your schedule is flexible, include details in the request
