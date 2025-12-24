@@ -13,6 +13,11 @@ type IntakeRow = {
   one_time_date: string | null;
 };
 
+type StorageMeta =
+  | { source: "postgres"; usedFallback: false }
+  | { source: "file"; usedFallback: false; reason: string }
+  | { source: "file"; usedFallback: true; reason: string };
+
 function fmt(dt: string) {
   try {
     return new Intl.DateTimeFormat(undefined, {
@@ -33,6 +38,7 @@ export default function KaitlynIntakesAdminPage() {
   const [rows, setRows] = useState<IntakeRow[]>([]);
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [meta, setMeta] = useState<StorageMeta | null>(null);
   const refreshTimer = useRef<any>(null);
 
   async function refresh() {
@@ -44,6 +50,7 @@ export default function KaitlynIntakesAdminPage() {
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) throw new Error(json.error || "Failed to load");
       setRows(json.intakes || []);
+      setMeta(json.meta || null);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (e: any) {
       setError(String(e?.message || e));
@@ -109,12 +116,32 @@ export default function KaitlynIntakesAdminPage() {
             <Link href="/admin" className="text-sm font-extrabold text-blue-600">
               Admin home
             </Link>
+
+            <form action="/api/admin/logout" method="POST">
+              <button
+                type="submit"
+                className="text-sm font-extrabold text-red-600 hover:text-red-700"
+              >
+                Logout
+              </button>
+            </form>
           </div>
         </div>
 
         {error ? (
           <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-bold text-red-800">
             {error}
+          </div>
+        ) : null}
+
+        {meta ? (
+          <div className="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-700">
+            <span className="font-extrabold text-slate-900">Storage:</span>{" "}
+            {meta.source === "postgres" ? "Postgres (persistent)" : "File fallback (may be temporary)"}
+            {meta.source === "file" ? (
+              <span className="text-slate-500"> · {meta.reason}</span>
+            ) : null}
+            {meta.usedFallback ? <span className="ml-1 text-amber-700">· using fallback right now</span> : null}
           </div>
         ) : null}
 
@@ -176,5 +203,6 @@ export default function KaitlynIntakesAdminPage() {
     </main>
   );
 }
+
 
 
