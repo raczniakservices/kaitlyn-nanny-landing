@@ -47,7 +47,7 @@ export default function Page() {
                     Weekends only right now (Fri night → Sun)
                   </p>
                   <p className="mt-2 text-xs text-[hsl(var(--muted))]">
-                    Share your preferred date/time window and I'll confirm what's open.
+                    Share your preferred date/time window and I&apos;ll confirm what&apos;s open.
                   </p>
                 </div>
               </Reveal>
@@ -58,7 +58,7 @@ export default function Page() {
                     Clear details, quick confirmations
                   </p>
                   <p className="mt-2 text-xs text-[hsl(var(--muted))]">
-                    You'll get a confirmation email and a response as soon as I'm available.
+                    You&apos;ll get a confirmation email and a response as soon as I&apos;m available.
                   </p>
                 </div>
               </Reveal>
