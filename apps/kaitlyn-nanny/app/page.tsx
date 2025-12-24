@@ -1,13 +1,9 @@
 import { IntakeForm } from "../components/IntakeForm";
 import { Container } from "../components/Container";
-import { PortraitBadge } from "../components/PortraitBadge";
 import { NavBar } from "../components/NavBar";
-import { CalendlyCTA } from "../components/CalendlyCTA";
 import { Reveal } from "../components/Reveal";
 
 export default function Page() {
-  const calendlyUrl = process.env.NEXT_PUBLIC_CALENDLY_URL || "";
-
   return (
     <main>
       <NavBar
@@ -20,57 +16,52 @@ export default function Page() {
       <section id="care-form" className="py-10 sm:py-14 min-h-screen">
         <Container>
           <div className="mx-auto max-w-3xl">
+            {/* Hero - Photo + Intro */}
             <Reveal>
-              <div className="mb-10 text-center">
-              <div className="relative inline-block">
-                <div className="pointer-events-none absolute -inset-x-10 -inset-y-6 -z-10 rounded-[2.5rem] bg-gradient-to-r from-[hsl(var(--accent))]/20 via-[hsl(var(--gold))]/10 to-[hsl(var(--lavender))]/18 blur-2xl" />
-                <h1 className="font-[var(--font-heading)] text-6xl font-semibold leading-[1.02] tracking-tight sm:text-7xl md:text-8xl bg-gradient-to-br from-[hsl(var(--accent-deep))] via-[hsl(var(--accent))] to-[hsl(var(--lavender))] bg-clip-text text-transparent drop-shadow-[0_8px_20px_rgba(0,0,0,0.18)] animate-gentle-float">
-                  Care with Kaitlyn
-                </h1>
-              </div>
-              <p className="mt-6 text-lg leading-relaxed text-[hsl(var(--text))]/85 sm:text-xl font-semibold tracking-wide">
-                Thoughtful, professional childcare in the Bel Air area
-              </p>
-              {calendlyUrl ? (
-                <div className="mt-6 flex items-center justify-center">
-                  <CalendlyCTA url={calendlyUrl} />
+              <div className="mb-12 text-center">
+                <div className="mb-6 flex justify-center">
+                  <div className="relative">
+                    <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-white shadow-xl">
+                      <img 
+                        src="/kaitlyn.jpg" 
+                        alt="Kaitlyn Raczniak"
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="absolute -bottom-2 -right-2 rounded-full bg-white px-3 py-1 shadow-lg border-2 border-[hsl(var(--accent))]/20">
+                      <span className="text-xs font-bold text-[hsl(var(--accent-deep))]">Bel Air, MD</span>
+                    </div>
+                  </div>
                 </div>
-              ) : null}
-            </div>
+
+                <h1 className="font-[var(--font-heading)] text-4xl sm:text-5xl font-bold text-[hsl(var(--text))] tracking-tight">
+                  Hi, I&apos;m Kaitlyn
+                </h1>
+                <p className="mt-3 text-base sm:text-lg text-[hsl(var(--text))]/80 leading-relaxed max-w-2xl mx-auto">
+                  I provide calm, reliable weekend childcare for families in the Bel Air area. 
+                  I love creating a safe environment where kids feel comfortable and parents feel confident.
+                </p>
+              </div>
             </Reveal>
 
-            <div id="availability" className="mb-10 grid gap-4 sm:grid-cols-3">
+            {/* Quick Info Cards - Simplified */}
+            <div id="availability" className="mb-10 grid gap-3 sm:grid-cols-3">
               <Reveal delay={0.05}>
-                <div className="hover-lift rounded-2xl border border-[hsl(var(--border))] bg-white/85 p-4 shadow-sm backdrop-blur-xl">
-                  <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">AVAILABILITY</p>
-                  <p className="mt-2 text-sm font-semibold text-[hsl(var(--text))]">
-                    Weekends only right now (Fri night → Sun)
-                  </p>
-                  <p className="mt-2 text-xs text-[hsl(var(--muted))]">
-                    Share your preferred date/time window and I&apos;ll confirm what&apos;s open.
-                  </p>
+                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">Weekends Only</p>
+                  <p className="mt-1 text-xs text-[hsl(var(--muted))]">Fri night – Sunday</p>
                 </div>
               </Reveal>
               <Reveal delay={0.1}>
-                <div className="hover-lift rounded-2xl border border-[hsl(var(--border))] bg-white/85 p-4 shadow-sm backdrop-blur-xl">
-                  <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">COMMUNICATION</p>
-                  <p className="mt-2 text-sm font-semibold text-[hsl(var(--text))]">
-                    Clear details, quick confirmations
-                  </p>
-                  <p className="mt-2 text-xs text-[hsl(var(--muted))]">
-                    You&apos;ll get a confirmation email and a response as soon as I&apos;m available.
-                  </p>
+                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">Quick Response</p>
+                  <p className="mt-1 text-xs text-[hsl(var(--muted))]">Usually within 24 hours</p>
                 </div>
               </Reveal>
               <Reveal delay={0.15}>
-                <div className="hover-lift rounded-2xl border border-[hsl(var(--border))] bg-white/85 p-4 shadow-sm backdrop-blur-xl">
-                  <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">FIT</p>
-                  <p className="mt-2 text-sm font-semibold text-[hsl(var(--text))]">
-                    A calm, reliable presence in your home
-                  </p>
-                  <p className="mt-2 text-xs text-[hsl(var(--muted))]">
-                    Tell me about routines, allergies, pets, and any special notes.
-                  </p>
+                <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 px-4 py-3 shadow-sm text-center">
+                  <p className="text-sm font-bold text-[hsl(var(--text))]">Experienced Care</p>
+                  <p className="mt-1 text-xs text-[hsl(var(--muted))]">Professional & warm</p>
                 </div>
               </Reveal>
             </div>
