@@ -61,5 +61,34 @@ export async function saveKaitlynIntake(payload: Record<string, unknown>) {
   return id;
 }
 
+export async function listKaitlynIntakes(limit: number) {
+  const p = getPool();
+  if (!p) return null;
+  await ensureSchema(p);
+  const lim = Math.min(500, Math.max(1, limit || 100));
+  const { rows } = await p.query(
+    `SELECT id, created_at, parent_name, email, phone, care_type, one_time_date
+     FROM kaitlyn_intakes
+     ORDER BY created_at DESC
+     LIMIT $1`,
+    [lim]
+  );
+  return rows;
+}
+
+export async function getKaitlynIntake(id: string) {
+  const p = getPool();
+  if (!p) return null;
+  await ensureSchema(p);
+  const { rows } = await p.query(
+    `SELECT id, created_at, parent_name, email, phone, care_type, one_time_date, payload
+     FROM kaitlyn_intakes
+     WHERE id = $1
+     LIMIT 1`,
+    [id]
+  );
+  return rows[0] || null;
+}
+
 
 
