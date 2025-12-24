@@ -20,7 +20,7 @@ export function Section({
               {eyebrow}
             </p>
           ) : null}
-          <h2 className="mt-2 font-[var(--font-playfair)] text-2xl leading-tight sm:text-3xl">
+          <h2 className="mt-2 font-[var(--font-heading)] text-2xl leading-tight sm:text-3xl">
             {title}
           </h2>
         </div>
@@ -29,6 +29,7 @@ export function Section({
     </section>
   );
 }
+
 
 
 

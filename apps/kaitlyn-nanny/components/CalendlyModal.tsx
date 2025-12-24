@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
+import { Dialog, DialogClose, DialogContent } from "./ui/dialog";
+import { Button } from "./ui/button";
 
 type Props = {
   open: boolean;
@@ -58,15 +60,6 @@ export function CalendlyModal({
 
   useEffect(() => {
     if (!open) return;
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
-
-  useEffect(() => {
-    if (!open) return;
     const handler = (e: MessageEvent) => {
       const data: any = e.data;
       if (!data || typeof data !== "object") return;
@@ -81,32 +74,26 @@ export function CalendlyModal({
     return () => window.removeEventListener("message", handler);
   }, [open, onEventScheduled]);
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-      role="dialog"
-      aria-modal="true"
-      aria-label={title}
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        if (!next) onClose();
+      }}
     >
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={onClose}
-        aria-label="Close"
-      />
-
-      <div className="relative w-full max-w-4xl overflow-hidden rounded-3xl border border-white/20 bg-white/10 shadow-2xl backdrop-blur-xl">
+      <DialogContent aria-label={title} className="p-0">
         <div className="flex items-center justify-between border-b border-white/15 px-5 py-4">
           <div className="text-xs font-semibold tracking-[0.22em] text-white/90">{title.toUpperCase()}</div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold tracking-wide text-white/90 hover:bg-white/20"
-          >
-            Close
-          </button>
+          <DialogClose asChild>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="rounded-full border-white/20 bg-white/10 text-white/90 hover:bg-white/20"
+            >
+              Close
+            </Button>
+          </DialogClose>
         </div>
 
         {/* Calendly inline widget */}
@@ -118,8 +105,8 @@ export function CalendlyModal({
             style={{ minWidth: "320px", height: "760px" }}
           />
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 

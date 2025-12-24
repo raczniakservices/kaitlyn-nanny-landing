@@ -2,24 +2,28 @@
 
 import { useState } from "react";
 import { CalendlyModal } from "./CalendlyModal";
+import { Button } from "./ui/button";
 
 export function CalendlyCTA({ url }: { url: string }) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <button
+      <Button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center justify-center rounded-full border border-[hsl(var(--accent))]/50 bg-white/70 px-5 py-2.5 text-xs font-semibold tracking-[0.18em] text-[hsl(var(--accent-deep))] shadow-lg backdrop-blur-xl transition hover:bg-white/90"
+        variant="outline"
+        size="sm"
+        className="rounded-full border-accent/50 bg-white/70 px-5 text-xs font-semibold tracking-[0.18em] text-accent-deep shadow-lg backdrop-blur-xl hover:bg-white/90"
       >
         CHECK OPEN WEEKENDS
-      </button>
+      </Button>
 
       <CalendlyModal open={open} onClose={() => setOpen(false)} url={url} />
     </>
   );
 }
+
 
 
 

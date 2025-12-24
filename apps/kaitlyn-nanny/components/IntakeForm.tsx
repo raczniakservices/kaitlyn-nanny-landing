@@ -3,12 +3,12 @@
 import { useMemo, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { submitIntake } from "../app/actions/submitIntake";
+import { Button } from "./ui/button";
 
 type FormValues = {
     familyType: "New" | "Returning" | "";
 
     referralSource:
-    | "Celebree"
     | "Word of mouth"
     | "Facebook/Instagram"
     | "Google"
@@ -184,10 +184,12 @@ function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
 function SubmitButton() {
     const { pending } = useFormStatus();
     return (
-        <button
+        <Button
             type="submit"
             disabled={pending}
-            className="inline-flex w-full items-center justify-center rounded-xl bg-gradient-to-r from-[hsl(var(--accent-deep))] via-[hsl(var(--accent))] to-[hsl(var(--accent-deep))] bg-size-200 bg-pos-0 px-8 py-4 text-base font-bold tracking-wide text-white shadow-2xl transition-all duration-500 hover:bg-pos-100 hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)] hover:scale-[1.02] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100"
+            variant="primary"
+            size="xl"
+            className="w-full tracking-wide hover:scale-[1.02] active:scale-[0.98] disabled:hover:scale-100"
         >
             {pending ? (
                 <>
@@ -198,7 +200,7 @@ function SubmitButton() {
                     Sending…
                 </>
             ) : "Request Care"}
-        </button>
+        </Button>
     );
 }
 
@@ -502,22 +504,6 @@ export function IntakeForm() {
         }));
     }
 
-    if (isSuccess) {
-        return (
-            <div className="rounded-2xl border-2 border-[hsl(var(--accent))] bg-gradient-to-br from-white/98 via-[hsl(var(--accent))]/12 to-[hsl(var(--lavender))]/10 p-8 shadow-2xl text-center animate-fade-in">
-                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--accent-deep))] to-[hsl(var(--accent))] shadow-xl animate-gentle-float">
-                    <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-                    </svg>
-                </div>
-                <p className="text-xl font-bold text-[hsl(var(--text))]">Request Received</p>
-                <p className="mt-3 text-base leading-relaxed text-[hsl(var(--text))]">
-                    Thank you for your inquiry. You'll receive a confirmation email shortly, and Kaitlyn will respond within 24 hours.
-                </p>
-            </div>
-        );
-    }
-
     const isReturning = values.familyType === "Returning";
     const isNew = values.familyType === "New";
     const showInterviewQuestion = isNew && values.metKaitlyn === "No";
@@ -539,6 +525,22 @@ export function IntakeForm() {
         // Build end options hourly. If max is 24:00, represent it as 24*60 here (display 12:00 AM).
         return hourlyOptions(from, max);
     }, [minEndM, endMaxM]);
+
+    if (isSuccess) {
+        return (
+            <div className="rounded-2xl border-2 border-[hsl(var(--accent))] bg-gradient-to-br from-white/98 via-[hsl(var(--accent))]/12 to-[hsl(var(--lavender))]/10 p-8 shadow-2xl text-center animate-fade-in">
+                <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--accent-deep))] to-[hsl(var(--accent))] shadow-xl animate-gentle-float">
+                    <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+                <p className="text-xl font-bold text-[hsl(var(--text))]">Request Received</p>
+                <p className="mt-3 text-base leading-relaxed text-[hsl(var(--text))]">
+                    Thank you for your inquiry. You&apos;ll receive a confirmation email shortly, and Kaitlyn will respond within 24 hours.
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className="rounded-3xl border border-[hsl(var(--border))] bg-white/80 p-10 shadow-[0_24px_70px_rgba(0,0,0,0.16)] animate-fade-in relative overflow-hidden backdrop-blur-xl">
@@ -570,7 +572,7 @@ export function IntakeForm() {
                                 />
                                 <div>
                                     <p className="text-sm font-semibold">New family</p>
-                                    <p className="text-xs text-[hsl(var(--muted))]">First-time request (we'll confirm details)</p>
+                                    <p className="text-xs text-[hsl(var(--muted))]">First-time request (we&apos;ll confirm details)</p>
                                 </div>
                             </label>
 
@@ -612,7 +614,6 @@ export function IntakeForm() {
                                 className="mt-2"
                             >
                                 <option value="">Select…</option>
-                                <option value="Celebree">Celebree</option>
                                 <option value="Word of mouth">Word of mouth</option>
                                 <option value="Facebook/Instagram">Facebook / Instagram</option>
                                 <option value="Google">Google</option>
@@ -685,7 +686,6 @@ export function IntakeForm() {
                                 >
                                     <option value="">Select… (optional)</option>
                                     <option value="Returning family">Returning family</option>
-                                    <option value="Celebree">Celebree</option>
                                     <option value="Word of mouth">Word of mouth</option>
                                     <option value="Facebook/Instagram">Facebook / Instagram</option>
                                     <option value="Google">Google</option>
@@ -707,7 +707,7 @@ export function IntakeForm() {
                         </div>
                     )}
 
-                    {/* Interview Preference (New families who don't know her from Celebree) */}
+                    {/* Interview Preference (New families who haven't met her before) */}
                     {showInterviewQuestion && (
                         <div className="rounded-2xl border border-[hsl(var(--border))] bg-white/65 p-4 backdrop-blur-sm">
                             <FieldLabel>Would you like a quick interview before the first session?</FieldLabel>
@@ -892,7 +892,7 @@ export function IntakeForm() {
                             {/* NOT SURE: Just a text box */}
                             {values.careType === "Not sure" && (
                                 <div>
-                                    <FieldLabel>Tell us what you're thinking</FieldLabel>
+                                    <FieldLabel>Tell us what you&apos;re thinking</FieldLabel>
                                     <Textarea
                                         name="notSureDateNotes"
                                         rows={3}
@@ -1074,7 +1074,7 @@ export function IntakeForm() {
                                         onChange={(e) => setValues((v) => ({ ...v, allergiesNotes: e.target.value }))}
                                         placeholder="Example: peanut allergy (EpiPen in kitchen), sensory processing needs"
                                     />
-                                    <Hint>We'll discuss details before the first session</Hint>
+                                    <Hint>We&apos;ll discuss details before the first session</Hint>
                                     <FieldError msg={clientErrors.allergiesNotes} />
                                 </div>
                             )}
@@ -1097,7 +1097,7 @@ export function IntakeForm() {
                                     <option value="$35+/hr">$35+/hr</option>
                                     <option value="Not sure">Not sure, want your rate</option>
                                 </Select>
-                                <Hint>Kaitlyn's minimum is $27/hr</Hint>
+                                <Hint>Kaitlyn&apos;s minimum is $27/hr</Hint>
                                 <FieldError msg={clientErrors.budgetRange} />
                             </div>
                         </div>

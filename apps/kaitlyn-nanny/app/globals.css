@@ -200,11 +200,6 @@ select:-webkit-autofill:focus {
   animation: slide-up 0.5s ease-out;
 }
 
-/* Smooth transitions for all interactive elements */
-input, select, textarea, button {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
 /* Force white backgrounds on form inputs */
 input:not([type="radio"]):not([type="checkbox"]),
 select,
@@ -225,12 +220,6 @@ textarea {
   background-position: right center;
 }
 
-/* Enhanced focus states */
-input:focus, select:focus, textarea:focus {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
-}
-
 @keyframes focus-glow {
   0% {
     box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08), 0 0 0 0 hsla(var(--accent-deep), 0.18);
@@ -238,20 +227,6 @@ input:focus, select:focus, textarea:focus {
   100% {
     box-shadow: 0 10px 26px rgba(17, 24, 39, 0.12), 0 0 0 6px hsla(var(--accent-deep), 0);
   }
-}
-
-input:focus, select:focus, textarea:focus {
-  animation: focus-glow 700ms ease-out;
-}
-
-/* Button hover effects */
-button:not(:disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
-}
-
-button:not(:disabled):active {
-  transform: translateY(0);
 }
 
 /* Radio and checkbox animations */
