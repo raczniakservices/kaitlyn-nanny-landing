@@ -129,6 +129,44 @@ export async function saveKaitlynIntakeFallback(payload: Record<string, unknown>
   return id;
 }
 
+export async function clearKaitlynIntakesWithMeta(): Promise<{ ok: true; meta: KaitlynStorageMeta } | { ok: false; error: string }> {
+  const p = getPool();
+
+  if (p) {
+    try {
+      await ensureSchema(p);
+      await p.query(`DELETE FROM kaitlyn_intakes;`);
+      return { ok: true, meta: { source: "postgres", usedFallback: false } };
+    } catch (err) {
+      // Fall back to file clear if Postgres errors.
+      try {
+        await clearKaitlynIntakesFile();
+        return { ok: true, meta: { source: "file", usedFallback: true, reason: "postgres error" } };
+      } catch (e: any) {
+        return { ok: false, error: String(e?.message || e || err) };
+      }
+    }
+  }
+
+  try {
+    await clearKaitlynIntakesFile();
+    return { ok: true, meta: { source: "file", usedFallback: false, reason: "DATABASE_URL not set" } };
+  } catch (e: any) {
+    return { ok: false, error: String(e?.message || e) };
+  }
+}
+
+async function clearKaitlynIntakesFile() {
+  const filePath = await fallbackFilePath();
+  // If file doesn't exist yet, treat as already empty.
+  try {
+    await fs.unlink(filePath);
+  } catch (err: any) {
+    if (err?.code === "ENOENT") return;
+    throw err;
+  }
+}
+
 export async function listKaitlynIntakes(limit: number) {
   return (await listKaitlynIntakesWithMeta(limit)).rows;
 }

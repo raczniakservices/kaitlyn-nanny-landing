@@ -36,12 +36,19 @@ export default function KaitlynIntakesAdminPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [rows, setRows] = useState<IntakeRow[]>([]);
+  const [deleting, setDeleting] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>("");
-  const [autoRefresh, setAutoRefresh] = useState(true);
   const [meta, setMeta] = useState<StorageMeta | null>(null);
-  const refreshTimer = useRef<any>(null);
+
+  function mergeRows(prev: IntakeRow[], incoming: IntakeRow[]) {
+    const byId = new Map<string, IntakeRow>();
+    for (const r of prev) byId.set(r.id, r);
+    for (const r of incoming) byId.set(r.id, r);
+    return Array.from(byId.values()).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+  }
 
   async function refresh() {
+    setLoading(true);
     setError("");
     try {
       const res = await fetch(`/api/admin/kaitlyn-intakes?limit=200&t=${Date.now()}`, {
@@ -49,11 +56,34 @@ export default function KaitlynIntakesAdminPage() {
       });
       const json = await res.json().catch(() => ({}));
       if (!res.ok || !json.ok) throw new Error(json.error || "Failed to load");
-      setRows(json.intakes || []);
+      const incoming = (json.intakes || []) as IntakeRow[];
+      setRows((prev) => mergeRows(prev, incoming));
       setMeta(json.meta || null);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (e: any) {
       setError(String(e?.message || e));
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function clearAllLeads() {
+    const ok = window.confirm("Delete all requests? This cannot be undone.");
+    if (!ok) return;
+
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/kaitlyn-intakes?t=${Date.now()}`, { method: "DELETE" });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Failed to delete");
+      setRows([]);
+      setMeta(json.meta || null);
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch (e: any) {
+      setError(String(e?.message || e));
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -70,19 +100,6 @@ export default function KaitlynIntakesAdminPage() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    if (refreshTimer.current) clearInterval(refreshTimer.current);
-    if (autoRefresh) {
-      refreshTimer.current = setInterval(() => {
-        refresh().catch(() => {});
-      }, 8000);
-    }
-    return () => {
-      if (refreshTimer.current) clearInterval(refreshTimer.current);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [autoRefresh]);
 
   const count = useMemo(() => rows.length, [rows.length]);
 
@@ -102,16 +119,19 @@ export default function KaitlynIntakesAdminPage() {
           <div className="flex flex-wrap items-center gap-3">
             <button
               onClick={() => refresh()}
-              disabled={loading}
+              disabled={loading || deleting}
               className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-extrabold text-white shadow-sm disabled:opacity-60"
             >
               {loading ? "Refreshing…" : "Refresh"}
             </button>
 
-            <label className="flex items-center gap-2 text-sm font-extrabold text-slate-900">
-              <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />
-              Auto-refresh
-            </label>
+            <button
+              onClick={() => clearAllLeads()}
+              disabled={loading || deleting}
+              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-extrabold text-red-700 shadow-sm hover:bg-red-100 disabled:opacity-60"
+            >
+              {deleting ? "Deleting…" : "Delete all"}
+            </button>
 
             <Link href="/admin" className="text-sm font-extrabold text-blue-600">
               Admin home
@@ -197,7 +217,7 @@ export default function KaitlynIntakesAdminPage() {
         </div>
 
         <div className="mt-3 text-xs font-semibold text-slate-500">
-          Tip: bookmark <code className="font-bold">/admin/kaitlyn-intakes</code> on your phone.
+          Tip: this inbox does not auto-refresh. It only updates when you press Refresh.
         </div>
       </div>
     </main>

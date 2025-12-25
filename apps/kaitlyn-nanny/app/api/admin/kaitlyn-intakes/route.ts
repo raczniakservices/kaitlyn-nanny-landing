@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { listKaitlynIntakesWithMeta } from "../../../../lib/db";
+import { clearKaitlynIntakesWithMeta, listKaitlynIntakesWithMeta } from "../../../../lib/db";
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
@@ -8,6 +8,23 @@ export async function GET(req: Request) {
   const { rows, meta } = await listKaitlynIntakesWithMeta(limit);
   return NextResponse.json(
     { ok: true, intakes: rows || [], meta },
+    {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store, max-age=0",
+        Pragma: "no-cache"
+      }
+    }
+  );
+}
+
+export async function DELETE() {
+  const res = await clearKaitlynIntakesWithMeta();
+  if (!res.ok) {
+    return NextResponse.json({ ok: false, error: res.error || "Failed to clear" }, { status: 500 });
+  }
+  return NextResponse.json(
+    { ok: true, meta: res.meta },
     {
       status: 200,
       headers: {
