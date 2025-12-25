@@ -75,7 +75,7 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
       <div className="relative rounded-2xl border border-[hsl(var(--border))] bg-gradient-to-br from-white to-[hsl(var(--accent))]/5 p-8 shadow-lg">
         {/* Decorative quotation mark */}
         <div className="absolute top-4 left-4 text-5xl leading-none text-[hsl(var(--accent))]/20 font-serif">
-          "
+          &ldquo;
         </div>
 
         {/* Testimonial content with fade animation */}
