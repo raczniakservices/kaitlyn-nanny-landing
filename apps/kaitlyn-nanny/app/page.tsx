@@ -119,21 +119,21 @@ export default function Page() {
                     <img 
                       src="/kaitlyn1.jfif" 
                       alt="Kaitlyn with children"
-                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-[50%_20%] sm:object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm h-64 sm:h-auto">
                     <img 
                       src="/kaitlyn2.jfif" 
                       alt="Kaitlyn childcare"
-                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-[50%_20%] sm:object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                   <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm h-64 sm:h-auto">
                     <img 
                       src="/kaitlyn3.jfif" 
                       alt="Kaitlyn with kids"
-                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-[50%_20%] sm:object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 </div>
