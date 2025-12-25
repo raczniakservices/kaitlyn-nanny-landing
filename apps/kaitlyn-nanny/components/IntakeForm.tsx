@@ -1085,19 +1085,20 @@ export function IntakeForm() {
                     <SectionCard title="Budget (optional)">
                         <div className="space-y-4">
                             <div>
-                                <FieldLabel>Budget range (per hour)</FieldLabel>
+                                <FieldLabel>Any budget constraints we should know about?</FieldLabel>
+                                <Hint>Starting rate is $27/hour. Let us know if you have specific budget needs.</Hint>
                                 <Select
                                     name="budgetRange"
                                     value={values.budgetRange}
                                     onChange={(e) => setValues((v) => ({ ...v, budgetRange: e.target.value as any }))}
                                 >
-                                    <option value="">Prefer to discuss</option>
-                                    <option value="$27-$30/hr">$27-$30/hr</option>
-                                    <option value="$30-$35/hr">$30-$35/hr</option>
-                                    <option value="$35+/hr">$35+/hr</option>
-                                    <option value="Not sure">Not sure, want your rate</option>
+                                    <option value="">No constraints</option>
+                                    <option value="$27-$30/hr">Prefer $27-$30/hr</option>
+                                    <option value="$30-$35/hr">Flexible up to $35/hr</option>
+                                    <option value="$35+/hr">$35+/hr is fine</option>
+                                    <option value="Not sure">Want to discuss</option>
                                 </Select>
-                                <Hint>Optional. If you have constraints, sharing a range helps.</Hint>
+                                <Hint>This helps us understand your needs upfront.</Hint>
                             </div>
                         </div>
                     </SectionCard>

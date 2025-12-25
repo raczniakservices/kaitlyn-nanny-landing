@@ -87,7 +87,7 @@ export default function Page() {
 
             {/* Testimonials */}
             <Reveal delay={0.25}>
-              <div className="mb-10">
+              <div className="mb-6">
                 <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PARENTS SAY</p>
                 <div className="space-y-4">
                   {/* Testimonial 1 */}
@@ -111,7 +111,7 @@ export default function Page() {
 
             {/* Photo Gallery */}
             <Reveal delay={0.3}>
-              <div className="mb-10">
+              <div className="mb-6">
                 <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">IN ACTION</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
