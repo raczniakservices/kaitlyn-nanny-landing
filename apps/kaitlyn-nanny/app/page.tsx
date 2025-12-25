@@ -87,23 +87,23 @@ export default function Page() {
 
             {/* Testimonials */}
             <Reveal delay={0.25}>
-              <div className="mb-6">
-                <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PARENTS SAY</p>
-                <div className="space-y-4">
+              <div className="mb-4">
+                <p className="mb-3 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PARENTS SAY</p>
+                <div className="space-y-3">
                   {/* Testimonial 1 */}
-                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-5 shadow-sm">
+                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-4 shadow-sm">
                     <p className="text-sm leading-relaxed text-[hsl(var(--text))]/90">
                       &quot;Kaitlyn is amazing with children, I see her in action! She&apos;s patient, caring and trustworthy! 💗&quot;
                     </p>
-                    <p className="mt-3 text-xs font-bold text-[hsl(var(--text))]">— Robin M.</p>
+                    <p className="mt-2 text-xs font-bold text-[hsl(var(--text))]">— Robin M.</p>
                   </div>
 
                   {/* Testimonial 2 */}
-                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-5 shadow-sm">
+                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-4 shadow-sm">
                     <p className="text-sm leading-relaxed text-[hsl(var(--text))]/90">
                       &quot;Kaitlyn is one of the few people I fully trust to watch my kids. My husband and I can have a worry-free night out when they are under her care.&quot;
                     </p>
-                    <p className="mt-3 text-xs font-bold text-[hsl(var(--text))]">— Jenny M. S.</p>
+                    <p className="mt-2 text-xs font-bold text-[hsl(var(--text))]">— Jenny M. S.</p>
                   </div>
                 </div>
               </div>
@@ -111,8 +111,8 @@ export default function Page() {
 
             {/* Photo Gallery */}
             <Reveal delay={0.3}>
-              <div className="mb-6">
-                <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">IN ACTION</p>
+              <div className="mb-8">
+                <p className="mb-3 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">IN ACTION</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
                     <img 
