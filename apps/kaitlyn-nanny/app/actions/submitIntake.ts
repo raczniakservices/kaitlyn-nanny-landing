@@ -210,30 +210,29 @@ function validate(formData: FormData) {
 }
 
 async function maybeSendEmails(payload: Record<string, unknown>) {
+  // Support two email methods:
+  // 1. Gmail SMTP (easiest - just needs Gmail app password)
+  // 2. Resend API (requires API key and domain setup)
+  
+  const gmailUser = process.env.GMAIL_USER;
+  const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
   const resendKey = process.env.RESEND_API_KEY;
+  
   const to = process.env.KAITLYN_INTAKE_TO;
-  const from = process.env.KAITLYN_INTAKE_FROM;
+  const from = process.env.KAITLYN_INTAKE_FROM || gmailUser || "noreply@localhost";
 
-  if (!resendKey || !to || !from) return;
+  if (!to) {
+    console.warn("KAITLYN_INTAKE_TO not set - skipping email notification");
+    return;
+  }
 
-  async function sendEmail(args: { to: string[]; subject: string; text: string }) {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${resendKey}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        from,
-        to: args.to,
-        subject: args.subject,
-        text: args.text
-      })
-    });
-    if (!res.ok) {
-      const body = await res.text().catch(() => "");
-      throw new Error(`Resend email failed (${res.status}): ${body || res.statusText}`);
-    }
+  // Choose email method
+  const useGmail = !!(gmailUser && gmailAppPassword);
+  const useResend = !!resendKey;
+  
+  if (!useGmail && !useResend) {
+    console.warn("No email service configured (set GMAIL_USER + GMAIL_APP_PASSWORD or RESEND_API_KEY)");
+    return;
   }
 
   const subject = `Care request: ${String(payload.parentName || "Intake")} ${payload.familyType === "Returning" ? "(RETURNING)" : "(NEW)"}`;
@@ -299,7 +298,12 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
 
   const text = sections.join("\n");
 
-  await sendEmail({ to: [to], subject, text });
+  // Send notification email
+  if (useGmail) {
+    await sendGmailEmail({ to: [to], subject, text, gmailUser: gmailUser!, gmailAppPassword: gmailAppPassword! });
+  } else if (useResend) {
+    await sendResendEmail({ to: [to], subject, text, resendKey: resendKey!, from });
+  }
 
   // Optional: send confirmation to the requester (default on)
   const requesterEmail = String(payload.email || "").trim();
@@ -309,7 +313,51 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
     const confirmText =
       `Thanks — we received your request and Kaitlyn will follow up within 24 hours.\n\n` +
       `Copy of what you submitted:\n\n${text}`;
-    await sendEmail({ to: [requesterEmail], subject: confirmSubject, text: confirmText });
+    
+    if (useGmail) {
+      await sendGmailEmail({ to: [requesterEmail], subject: confirmSubject, text, gmailUser: gmailUser!, gmailAppPassword: gmailAppPassword! });
+    } else if (useResend) {
+      await sendResendEmail({ to: [requesterEmail], subject: confirmSubject, text, resendKey: resendKey!, from });
+    }
+  }
+}
+
+async function sendGmailEmail(args: { to: string[]; subject: string; text: string; gmailUser: string; gmailAppPassword: string }) {
+  const nodemailer = await import("nodemailer");
+  
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: args.gmailUser,
+      pass: args.gmailAppPassword
+    }
+  });
+
+  await transporter.sendMail({
+    from: args.gmailUser,
+    to: args.to.join(", "),
+    subject: args.subject,
+    text: args.text
+  });
+}
+
+async function sendResendEmail(args: { to: string[]; subject: string; text: string; resendKey: string; from: string }) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${args.resendKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from: args.from,
+      to: args.to,
+      subject: args.subject,
+      text: args.text
+    })
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`Resend email failed (${res.status}): ${body || res.statusText}`);
   }
 }
 
