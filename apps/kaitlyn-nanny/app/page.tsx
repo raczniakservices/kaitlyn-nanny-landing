@@ -89,7 +89,7 @@ export default function Page() {
             {/* Testimonials */}
             <Reveal delay={0.25}>
               <div className="mb-4">
-                <p className="mb-3 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PARENTS SAY</p>
+                <p className="mb-3 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PEOPLE SAY</p>
                 <div className="space-y-3">
                   {/* Testimonial 1 */}
                   <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-4 shadow-sm">
@@ -163,11 +163,6 @@ export default function Page() {
                   <div>
                     <p className="text-sm font-bold text-[hsl(var(--text))]">What if I need to cancel?</p>
                     <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Just contact me as soon as possible. As my schedule fills up, I&apos;ll establish a clearer cancellation policy.</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm font-bold text-[hsl(var(--text))]">Do you provide transportation?</p>
-                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes, I drive to all jobs. I&apos;m also a school transportation driver, so safety is my priority.</p>
                   </div>
                   
                   <div>
