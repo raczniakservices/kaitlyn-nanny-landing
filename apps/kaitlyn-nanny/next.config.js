@@ -9,6 +9,10 @@ const nextConfig = {
     // Disabling it for dev keeps local iteration stable.
     if (dev) config.cache = false;
     return config;
+  },
+  // Force rebuild - updated for mobile photo positioning
+  generateBuildId: async () => {
+    return 'build-' + Date.now()
   }
 };
 

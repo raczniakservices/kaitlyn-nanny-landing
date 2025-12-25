@@ -12,8 +12,14 @@ npm run dev
 
 ### Submissions (MVP)
 
-- In **development**, submissions are appended to `apps/kaitlyn-nanny/data/intakes.json`.
-- In **production**, submissions are written to the server’s temp directory (`/tmp`).
+- If `DATABASE_URL` is set (recommended), submissions are stored in Postgres (table: `kaitlyn_intakes`).
+- If `DATABASE_URL` is **not** set, submissions fall back to a JSON file:
+  - **development**: `apps/kaitlyn-nanny/data/kaitlyn-intakes.json` (if that folder exists), otherwise `<repo>/data/kaitlyn-intakes.json`
+  - **production**: the server’s temp directory (ephemeral)
+
+Optional override:
+
+- `KAITLYN_DATA_DIR`: force the folder where the fallback JSON file is stored (useful with a Render disk mount).
 
 ### Optional: email notifications (recommended)
 
@@ -22,8 +28,17 @@ If you set these env vars, each submission will email Kaitlyn using the Resend A
 - `RESEND_API_KEY`
 - `KAITLYN_INTAKE_TO` (destination email)
 - `KAITLYN_INTAKE_FROM` (verified sender, e.g. `Kaitlyn Intake <intake@yourdomain.com>`)
+- `KAITLYN_SEND_CONFIRMATION_EMAIL` (optional, default `true`; set to `false` to only email Kaitlyn)
 
 No secrets are hardcoded.
+
+### Resend + Render setup (quick)
+
+- Create a Resend account and add an API key.
+- In Render service **`kaitlyn-nanny-landing`**, set env vars:
+  - `RESEND_API_KEY`
+  - `KAITLYN_INTAKE_TO` = Kaitlyn’s email
+  - `KAITLYN_INTAKE_FROM` = a verified sender (domain recommended)
 
 ### Optional: Calendly embed + API (recommended)
 
