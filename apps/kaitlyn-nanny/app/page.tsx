@@ -30,6 +30,9 @@ export default function Page() {
                   I provide calm, reliable weekend childcare for families in the Bel Air area. 
                   I love creating a safe environment where kids feel comfortable and parents feel confident.
                 </p>
+                <p className="mt-4 text-sm text-[hsl(var(--muted))] max-w-xl mx-auto">
+                  Currently offering weekend care due to my weekday work schedule. Working on expanding to weekday availability soon!
+                </p>
               </div>
             </Reveal>
 
@@ -55,7 +58,7 @@ export default function Page() {
               </Reveal>
             </div>
 
-            {/* Trust details (testimonials will go here next) */}
+            {/* Trust details */}
             <Reveal delay={0.2}>
               <div className="mb-10 rounded-2xl border border-[hsl(var(--border))] bg-white/90 p-6 shadow-sm">
                 <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">TRUST</p>
@@ -64,7 +67,108 @@ export default function Page() {
                   <li>Trusted with a classroom-sized group (up to 16 kids, ages 6-10) almost every day</li>
                   <li>School transportation driver - safety-focused and dependable</li>
                 </ul>
+                
+                {/* Credentials badges */}
+                <div className="mt-5 flex flex-wrap gap-2 items-center">
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))]/10 to-[hsl(var(--lavender))]/10 px-3 py-1.5 text-xs font-bold text-[hsl(var(--text))]">
+                    <span className="text-[hsl(var(--accent-deep))]">✓</span> CPR Certified
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))]/10 to-[hsl(var(--lavender))]/10 px-3 py-1.5 text-xs font-bold text-[hsl(var(--text))]">
+                    <span className="text-[hsl(var(--accent-deep))]">✓</span> First Aid Certified
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-[hsl(var(--accent))]/10 to-[hsl(var(--lavender))]/10 px-3 py-1.5 text-xs font-bold text-[hsl(var(--text))]">
+                    <span className="text-[hsl(var(--accent-deep))]">✓</span> Background Checked
+                  </div>
+                </div>
+                
                 <p className="mt-4 text-xs text-[hsl(var(--muted))]">References available upon request.</p>
+              </div>
+            </Reveal>
+
+            {/* Testimonials */}
+            <Reveal delay={0.25}>
+              <div className="mb-10">
+                <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">WHAT PARENTS SAY</p>
+                <div className="space-y-4">
+                  {/* Testimonial 1 */}
+                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-5 shadow-sm">
+                    <p className="text-sm leading-relaxed text-[hsl(var(--text))]/90">
+                      &quot;Kaitlyn is amazing with children, I see her in action! She&apos;s patient, caring and trustworthy! 💗&quot;
+                    </p>
+                    <p className="mt-3 text-xs font-bold text-[hsl(var(--text))]">— Robin M.</p>
+                  </div>
+
+                  {/* Testimonial 2 */}
+                  <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-5 shadow-sm">
+                    <p className="text-sm leading-relaxed text-[hsl(var(--text))]/90">
+                      &quot;Kaitlyn is one of the few people I fully trust to watch my kids. My husband and I can have a worry-free night out when they are under her care.&quot;
+                    </p>
+                    <p className="mt-3 text-xs font-bold text-[hsl(var(--text))]">— Jenny M. S.</p>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* Photo Gallery */}
+            <Reveal delay={0.3}>
+              <div className="mb-10">
+                <p className="mb-4 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">IN ACTION</p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                    <img 
+                      src="/kaitlyn1.jfif" 
+                      alt="Kaitlyn with children"
+                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                    <img 
+                      src="/kaitlyn2.jfif" 
+                      alt="Kaitlyn childcare"
+                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                    <img 
+                      src="/kaitlyn3.jfif" 
+                      alt="Kaitlyn with kids"
+                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+
+            {/* FAQ Section */}
+            <Reveal delay={0.35}>
+              <div className="mb-10 rounded-2xl border border-[hsl(var(--border))] bg-white/90 p-6 shadow-sm">
+                <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">COMMON QUESTIONS</p>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">What&apos;s your rate?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Rates start at $27/hour depending on details. We&apos;ll discuss the specifics during booking.</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">Do you have CPR certification?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes! I&apos;m both CPR and First Aid certified.</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">What if I need to cancel?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Just contact me as soon as possible. As my schedule fills up, I&apos;ll establish a clearer cancellation policy.</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">Do you provide transportation?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes, I drive to all jobs. I&apos;m also a school transportation driver, so safety is my priority.</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">What ages do you work with?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">I primarily work with ages 6-10, but I have experience with all ages and work with various age groups regularly.</p>
+                  </div>
+                </div>
               </div>
             </Reveal>
 
