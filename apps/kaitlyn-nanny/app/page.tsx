@@ -64,7 +64,8 @@ export default function Page() {
                 <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">TRUST</p>
                 <ul className="mt-3 space-y-2 text-sm font-semibold text-[hsl(var(--text))]/90">
                   <li>Professional childcare experience: 3+ years</li>
-                  <li>Trusted with a classroom-sized group (up to 16 kids, ages 6-10) almost every day</li>
+                  <li>Regularly manages groups of 16 kids (ages 6-10) and has supervised up to 30 children</li>
+                  <li>Summer camp counselor - experienced with field trips and group activities</li>
                   <li>School transportation driver - safety-focused and dependable</li>
                 </ul>
                 
