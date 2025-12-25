@@ -31,6 +31,12 @@ function verifyAuthToken(token: string, expectedUser: string, expectedPass: stri
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const isAdminRoute = pathname.startsWith("/admin") || pathname.startsWith("/api/admin");
+  
+  // Allow login page and login API without auth
+  if (pathname === "/admin/login" || pathname === "/api/admin/login") {
+    return NextResponse.next();
+  }
+  
   if (!isAdminRoute) return NextResponse.next();
 
   // Allow unprotected admin in dev if creds aren't configured.
@@ -38,7 +44,10 @@ export function middleware(req: NextRequest) {
   const pass = process.env.ADMIN_BASIC_PASS || "";
   if (process.env.NODE_ENV !== "production" && (!user || !pass)) return NextResponse.next();
 
-  if (!user || !pass) return unauthorized();
+  if (!user || !pass) {
+    // Redirect to login page instead of returning 401
+    return NextResponse.redirect(new URL("/admin/login", req.url));
+  }
 
   // Check for persistent auth cookie first
   const authCookie = req.cookies.get(COOKIE_NAME)?.value;
@@ -55,32 +64,8 @@ export function middleware(req: NextRequest) {
     return response;
   }
 
-  // No valid cookie - check HTTP Basic Auth
-  const auth = req.headers.get("authorization") || "";
-  if (!auth.toLowerCase().startsWith("basic ")) return unauthorized();
-
-  let decoded = "";
-  try {
-    decoded = atob(auth.slice(6));
-  } catch {
-    return unauthorized();
-  }
-
-  const [u, p] = decoded.split(":");
-  if (u !== user || p !== pass) return unauthorized();
-
-  // Valid credentials - set persistent cookie and allow access
-  const response = NextResponse.next();
-  const token = createAuthToken(user, pass);
-  response.cookies.set(COOKIE_NAME, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: COOKIE_MAX_AGE,
-    path: "/"
-  });
-
-  return response;
+  // No valid cookie - redirect to login page
+  return NextResponse.redirect(new URL("/admin/login", req.url));
 }
 
 export const config = {
