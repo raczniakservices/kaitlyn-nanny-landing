@@ -3,7 +3,7 @@
 import { saveKaitlynIntake, saveKaitlynIntakeFallback } from "../../lib/db";
 
 type IntakeState =
-  | { ok: true; id: string }
+  | { ok: true; id: string; storage: "postgres" | "file" }
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 function getString(formData: FormData, key: string) {
@@ -376,8 +376,20 @@ export async function submitIntake(
   };
 
   // Step 3: store submission
-  const dbId = await saveKaitlynIntake(payload as any).catch(() => null);
+  let dbId: string | null = null;
+  try {
+    dbId = await saveKaitlynIntake(payload as any);
+  } catch (err) {
+    // Critical to diagnose in production: if DB inserts fail, we silently fall back to file storage.
+    console.error("Kaitlyn intake DB save failed (falling back to file storage):", err);
+  }
+  const usedFallback = !dbId;
   const id = dbId || (await saveKaitlynIntakeFallback(payload));
+  if (usedFallback && process.env.NODE_ENV === "production") {
+    console.warn(
+      "Kaitlyn intake stored using FILE fallback in production. This usually means DATABASE_URL is missing or Postgres insert failed."
+    );
+  }
 
   // Step 4: send email
   try {
@@ -386,5 +398,5 @@ export async function submitIntake(
     console.error("Intake email send failed:", err);
   }
 
-  return { ok: true, id };
+  return { ok: true, id, storage: usedFallback ? "file" : "postgres" };
 }

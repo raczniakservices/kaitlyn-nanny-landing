@@ -446,6 +446,7 @@ export function IntakeForm() {
     }, [state]);
 
     const isSuccess = Boolean(state && typeof state === "object" && (state as any).ok === true);
+    const successStorage = isSuccess ? String((state as any).storage || "") : "";
     const minDate = useMemo(() => isoTodayLocal(), []);
     const maxDate = useMemo(() => addMonthsISO(isoTodayLocal(), 6), []);
     const allowedDateOptions = useMemo(() => allowedDatesInRange(minDate, maxDate), [minDate, maxDate]);
@@ -536,6 +537,17 @@ export function IntakeForm() {
                 <p className="mt-3 text-base leading-relaxed text-[hsl(var(--text))]">
                     Thank you for your inquiry. You&apos;ll receive a confirmation email shortly, and Kaitlyn will respond within 24 hours.
                 </p>
+                {successStorage ? (
+                    <p className="mt-3 text-xs font-semibold text-[hsl(var(--muted))]">
+                        Saved: <span className="font-extrabold text-[hsl(var(--text))]">{successStorage}</span>
+                        {successStorage === "file" ? (
+                            <span className="text-[hsl(var(--muted))]">
+                                {" "}
+                                (temporary storage — admin may not see this if Postgres isn&apos;t configured)
+                            </span>
+                        ) : null}
+                    </p>
+                ) : null}
             </div>
         );
     }
