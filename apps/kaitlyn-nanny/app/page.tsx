@@ -115,25 +115,25 @@ export default function Page() {
               <div className="mb-8">
                 <p className="mb-3 text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))]">IN ACTION</p>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm h-64 sm:h-auto">
                     <img 
                       src="/kaitlyn1.jfif" 
                       alt="Kaitlyn with children"
-                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm h-64 sm:h-auto">
                     <img 
                       src="/kaitlyn2.jfif" 
                       alt="Kaitlyn childcare"
-                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
-                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm">
+                  <div className="overflow-hidden rounded-xl border border-[hsl(var(--border))] shadow-sm h-64 sm:h-auto">
                     <img 
                       src="/kaitlyn3.jfif" 
                       alt="Kaitlyn with kids"
-                      className="h-full w-full object-cover aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 </div>

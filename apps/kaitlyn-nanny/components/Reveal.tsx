@@ -18,7 +18,7 @@ export function Reveal({
     <motion.div
       initial={reduceMotion ? false : { opacity: 0, y }}
       whileInView={reduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.6 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1], delay }}
     >
       {children}
