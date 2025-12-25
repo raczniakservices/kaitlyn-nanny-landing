@@ -150,6 +150,11 @@ export default function Page() {
                   </div>
                   
                   <div>
+                    <p className="text-sm font-bold text-[hsl(var(--text))]">What services do you provide?</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Beyond supervision and play, I help with homework, meal prep, bedtime routines, light tidying, and educational activities. Just let me know what you need in the booking form!</p>
+                  </div>
+                  
+                  <div>
                     <p className="text-sm font-bold text-[hsl(var(--text))]">Do you have CPR certification?</p>
                     <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes! I&apos;m both CPR and First Aid certified.</p>
                   </div>

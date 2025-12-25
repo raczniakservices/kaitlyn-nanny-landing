@@ -10,6 +10,11 @@ type Intake = {
   payload: Record<string, any>;
 };
 
+type StorageMeta =
+  | { source: "postgres"; usedFallback: false }
+  | { source: "file"; usedFallback: false; reason: string }
+  | { source: "file"; usedFallback: true; reason: string };
+
 function fmt(dt: string) {
   try {
     return new Intl.DateTimeFormat(undefined, {
@@ -42,6 +47,7 @@ export default function KaitlynIntakeDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<Intake | null>(null);
+  const [meta, setMeta] = useState<StorageMeta | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -56,6 +62,7 @@ export default function KaitlynIntakeDetailPage() {
         const json = await res.json().catch(() => ({}));
         if (!res.ok || !json.ok) throw new Error(json.error || "Failed to load");
         if (ok) setData(json.intake);
+        if (ok) setMeta(json.meta || null);
       } catch (e: any) {
         if (ok) setError(String(e?.message || e));
       } finally {
@@ -97,6 +104,14 @@ export default function KaitlynIntakeDetailPage() {
             <div className="mt-2 text-xs font-semibold text-slate-500">
               <span className="font-extrabold">ID:</span> {data.id}
             </div>
+            {meta ? (
+              <div className="mt-2 text-xs font-semibold text-slate-700">
+                <span className="font-extrabold text-slate-900">Storage:</span>{" "}
+                {meta.source === "postgres" ? "Postgres (persistent)" : "File fallback (may be temporary)"}
+                {meta.source === "file" ? <span className="text-slate-500"> · {meta.reason}</span> : null}
+                {meta.usedFallback ? <span className="ml-1 text-amber-700">· using fallback right now</span> : null}
+              </div>
+            ) : null}
 
             <Row k="parentName" v={data.payload?.parentName} />
             <Row k="email" v={data.payload?.email} />
@@ -129,7 +144,7 @@ export default function KaitlynIntakeDetailPage() {
             <Row k="hasAllergiesOrNeeds" v={data.payload?.hasAllergiesOrNeeds} />
             <Row k="allergiesNotes" v={data.payload?.allergiesNotes} />
 
-            <Row k="budgetRange" v={data.payload?.budgetRange} />
+            <Row k="servicesNeeded" v={data.payload?.servicesNeeded} />
             <Row k="notes" v={data.payload?.notes} />
           </div>
         ) : null}
@@ -137,5 +152,6 @@ export default function KaitlynIntakeDetailPage() {
     </main>
   );
 }
+
 
 

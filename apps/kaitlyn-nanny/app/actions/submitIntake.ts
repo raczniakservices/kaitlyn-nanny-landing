@@ -1,9 +1,6 @@
 "use server";
 
-import fs from "node:fs/promises";
-import os from "node:os";
-import path from "node:path";
-import { saveKaitlynIntake } from "../../lib/db";
+import { saveKaitlynIntake, saveKaitlynIntakeFallback } from "../../lib/db";
 
 type IntakeState =
   | { ok: true; id: string }
@@ -86,14 +83,14 @@ function validate(formData: FormData) {
   const ages = getString(formData, "ages");
   const hasAllergiesOrNeeds = getString(formData, "hasAllergiesOrNeeds");
   const allergiesNotes = getString(formData, "allergiesNotes");
-  const budgetRange = getString(formData, "budgetRange");
+  const servicesNeeded = getString(formData, "servicesNeeded");
 
   if (!["New", "Returning"].includes(familyType)) {
     fieldErrors.familyType = "Please select new or returning family.";
   }
 
   if (familyType === "New") {
-    const allowedReferral = ["Celebree", "Word of mouth", "Facebook/Instagram", "Google", "Other"];
+    const allowedReferral = ["Word of mouth", "Facebook/Instagram", "Google", "Other"];
     if (!allowedReferral.includes(referralSource)) {
       fieldErrors.referralSource = "Please select how you heard about Kaitlyn.";
     }
@@ -115,7 +112,6 @@ function validate(formData: FormData) {
     // optional attribution for returning; validate only if provided
     if (referralSource) {
       const allowedReferralReturning = [
-        "Celebree",
         "Word of mouth",
         "Facebook/Instagram",
         "Google",
@@ -210,34 +206,7 @@ function validate(formData: FormData) {
   if (hasAllergiesOrNeeds === "Yes" && !allergiesNotes)
     fieldErrors.allergiesNotes = "Please provide details about allergies or needs.";
 
-  if (!["$27-$30/hr", "$30-$35/hr", "$35+/hr", "Not sure"].includes(budgetRange))
-    fieldErrors.budgetRange = "Please select a budget range.";
-
   return { ok: Object.keys(fieldErrors).length === 0, fieldErrors };
-}
-
-async function appendSubmission(submission: unknown) {
-  const id = `intake_${Date.now()}`;
-
-  const isProd = process.env.NODE_ENV === "production";
-  const dir = isProd ? os.tmpdir() : path.join(process.cwd(), "data");
-  const filePath = path.join(dir, "intakes.json");
-
-  await fs.mkdir(dir, { recursive: true });
-
-  let existing: unknown[] = [];
-  try {
-    const raw = await fs.readFile(filePath, "utf8");
-    const parsed = JSON.parse(raw);
-    if (Array.isArray(parsed)) existing = parsed;
-  } catch {
-    // first run, create file
-  }
-
-  existing.push({ id, createdAt: new Date().toISOString(), submission });
-  await fs.writeFile(filePath, JSON.stringify(existing, null, 2), "utf8");
-
-  return id;
 }
 
 async function maybeSendEmails(payload: Record<string, unknown>) {
@@ -248,7 +217,7 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
   if (!resendKey || !to || !from) return;
 
   async function sendEmail(args: { to: string[]; subject: string; text: string }) {
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${resendKey}`,
@@ -261,6 +230,10 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
         text: args.text
       })
     });
+    if (!res.ok) {
+      const body = await res.text().catch(() => "");
+      throw new Error(`Resend email failed (${res.status}): ${body || res.statusText}`);
+    }
   }
 
   const subject = `Care request: ${String(payload.parentName || "Intake")} ${payload.familyType === "Returning" ? "(RETURNING)" : "(NEW)"}`;
@@ -316,8 +289,10 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
     sections.push(`Details: ${payload.allergiesNotes ?? ""}`);
   }
 
-  sections.push("\n=== BUDGET ===");
-  sections.push(`Range: ${payload.budgetRange ?? ""}`);
+  if (payload.servicesNeeded) {
+    sections.push("\n=== SERVICES NEEDED ===");
+    sections.push(`${payload.servicesNeeded}`);
+  }
 
   sections.push("\n=== NOTES ===");
   sections.push(`${payload.notes ?? "(none)"}`);
@@ -395,14 +370,14 @@ export async function submitIntake(
     hasAllergiesOrNeeds: getString(formData, "hasAllergiesOrNeeds"),
     allergiesNotes: getString(formData, "allergiesNotes"),
 
-    budgetRange: getString(formData, "budgetRange"),
+    servicesNeeded: getString(formData, "servicesNeeded"),
     
     notes: getString(formData, "notes")
   };
 
   // Step 3: store submission
   const dbId = await saveKaitlynIntake(payload as any).catch(() => null);
-  const id = dbId || (await appendSubmission(payload));
+  const id = dbId || (await saveKaitlynIntakeFallback(payload));
 
   // Step 4: send email
   try {

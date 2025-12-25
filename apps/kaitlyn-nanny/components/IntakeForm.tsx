@@ -53,7 +53,7 @@ type FormValues = {
     hasAllergiesOrNeeds: "Yes" | "No" | "";
     allergiesNotes: string;
 
-    budgetRange: "$27-$30/hr" | "$30-$35/hr" | "$35+/hr" | "Not sure" | "";
+    servicesNeeded: string;
 
     notes: string;
 };
@@ -94,7 +94,7 @@ const initial: FormValues = {
     hasAllergiesOrNeeds: "",
     allergiesNotes: "",
 
-    budgetRange: "",
+    servicesNeeded: "",
 
     notes: ""
 };
@@ -412,8 +412,6 @@ function validateAll(v: FormValues): ClientErrors {
     if (v.hasAllergiesOrNeeds === "Yes" && !v.allergiesNotes.trim()) {
         e.allergiesNotes = "Please provide details.";
     }
-
-    // Budget is optional; we collect it for context only.
 
     return e;
 }
@@ -1078,27 +1076,17 @@ export function IntakeForm() {
                                     <FieldError msg={clientErrors.allergiesNotes} />
                                 </div>
                             )}
-                        </div>
-                    </SectionCard>
-
-                    {/* Budget */}
-                    <SectionCard title="Budget (optional)">
-                        <div className="space-y-4">
+                            
                             <div>
-                                <FieldLabel>Any budget constraints we should know about?</FieldLabel>
-                                <Hint>Starting rate is $27/hour. Let us know if you have specific budget needs.</Hint>
-                                <Select
-                                    name="budgetRange"
-                                    value={values.budgetRange}
-                                    onChange={(e) => setValues((v) => ({ ...v, budgetRange: e.target.value as any }))}
-                                >
-                                    <option value="">No constraints</option>
-                                    <option value="$27-$30/hr">Prefer $27-$30/hr</option>
-                                    <option value="$30-$35/hr">Flexible up to $35/hr</option>
-                                    <option value="$35+/hr">$35+/hr is fine</option>
-                                    <option value="Not sure">Want to discuss</option>
-                                </Select>
-                                <Hint>This helps us understand your needs upfront.</Hint>
+                                <FieldLabel>What support do you need during care?</FieldLabel>
+                                <Hint>Example: homework help, meal prep, bedtime routine. Rates start at $27/hour and adjust based on services.</Hint>
+                                <Textarea
+                                    name="servicesNeeded"
+                                    rows={3}
+                                    value={values.servicesNeeded}
+                                    onChange={(e) => setValues((v) => ({ ...v, servicesNeeded: e.target.value }))}
+                                    placeholder="Basic supervision and play, or let us know if you need homework help, meal prep, etc."
+                                />
                             </div>
                         </div>
                     </SectionCard>
