@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type Testimonial = {
   quote: string;
@@ -42,26 +42,47 @@ const TESTIMONIALS: Testimonial[] = [
 export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: number }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  // Auto-advance every 6 seconds
+  useEffect(() => {
+    if (isPaused) return;
+    
+    const interval = setInterval(() => {
+      setIsAnimating(true);
+      setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+      setTimeout(() => setIsAnimating(false), 300);
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
 
   const goNext = () => {
     if (isAnimating) return;
+    setIsPaused(true); // Pause auto-play when user manually navigates
     setIsAnimating(true);
     setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
     setTimeout(() => setIsAnimating(false), 300);
+    // Resume auto-play after 10 seconds of inactivity
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const goPrev = () => {
     if (isAnimating) return;
+    setIsPaused(true);
     setIsAnimating(true);
     setCurrentIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
     setTimeout(() => setIsAnimating(false), 300);
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const goTo = (idx: number) => {
     if (isAnimating || idx === currentIndex) return;
+    setIsPaused(true);
     setIsAnimating(true);
     setCurrentIndex(idx);
     setTimeout(() => setIsAnimating(false), 300);
+    setTimeout(() => setIsPaused(false), 10000);
   };
 
   const current = TESTIMONIALS[currentIndex];
