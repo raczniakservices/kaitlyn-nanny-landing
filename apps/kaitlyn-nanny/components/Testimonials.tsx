@@ -1,3 +1,6 @@
+"use client";
+import { useState } from "react";
+
 type Testimonial = {
   quote: string;
   author: string;
@@ -6,48 +9,62 @@ type Testimonial = {
 const TESTIMONIALS: Testimonial[] = [
   {
     quote:
-      '“Kaitlyn is amazing with children, I see her in action! She’s patient, caring and trustworthy! 💗”',
+      "\"Kaitlyn is amazing with children, I see her in action! She's patient, caring and trustworthy! 💗\"",
     author: "— Robin M."
   },
   {
     quote:
-      "“Kaitlyn is one of the few people I fully trust to watch my kids. My husband and I can have a worry-free night out when they are under her care.”",
+      "\"Kaitlyn is one of the few people I fully trust to watch my kids. My husband and I can have a worry-free night out when they are under her care.\"",
     author: "— Jenny M. S."
   },
   {
     quote:
-      "“Kaitlyn is wonderful with children. Not only does she put their safety first, she also tries to make sure they have fun. Her communication is amazing and we never have to worry about our kids while she is with them.”",
+      "\"Kaitlyn is wonderful with children. Not only does she put their safety first, she also tries to make sure they have fun. Her communication is amazing and we never have to worry about our kids while she is with them.\"",
     author: "— Nikita P. R."
   },
   {
     quote:
-      "“She has a heart for children, you will be blessed to have your child in her care♡”",
+      "\"She has a heart for children, you will be blessed to have your child in her care♡\"",
     author: "— Maxine D. M. J."
   },
   {
     quote:
-      "“I worked with Kaitlyn at celebre e for a year and I would always be excited to see when we were assigned to the same room for the day because I knew I had a reliable teacher who would be engaged with the children all day!”",
+      "\"I worked with Kaitlyn at celebre e for a year and I would always be excited to see when we were assigned to the same room for the day because I knew I had a reliable teacher who would be engaged with the children all day!\"",
     author: "— Rachel W."
   },
   {
     quote:
-      "“Kaitlyn is amazing!!! My 4 kids love her!! She’s so patient esp with my 8 year old who is hard to calm at night. She’s my kids favorite sitter!!!! ❤️”",
+      "\"Kaitlyn is amazing!!! My 4 kids love her!! She's so patient esp with my 8 year old who is hard to calm at night. She's my kids favorite sitter!!!! ❤️\"",
     author: "— Melanie D."
   }
 ];
 
-function Card({ quote, author }: Testimonial) {
-  return (
-    <div className="rounded-xl border border-[hsl(var(--border))] bg-white/90 p-4 shadow-sm">
-      <p className="text-sm leading-relaxed text-[hsl(var(--text))]/90">{quote}</p>
-      <p className="mt-2 text-xs font-bold text-[hsl(var(--text))]">{author}</p>
-    </div>
-  );
-}
-
 export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: number }) {
-  const visible = TESTIMONIALS.slice(0, initiallyVisible);
-  const remaining = TESTIMONIALS.slice(initiallyVisible);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const goNext = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentIndex((prev) => (prev + 1) % TESTIMONIALS.length);
+    setTimeout(() => setIsAnimating(false), 300);
+  };
+
+  const goPrev = () => {
+    if (isAnimating) return;
+    setIsAnimating(true);
+    setCurrentIndex((prev) => (prev - 1 + TESTIMONIALS.length) % TESTIMONIALS.length);
+    setTimeout(() => setIsAnimating(false), 300);
+  };
+
+  const goTo = (idx: number) => {
+    if (isAnimating || idx === currentIndex) return;
+    setIsAnimating(true);
+    setCurrentIndex(idx);
+    setTimeout(() => setIsAnimating(false), 300);
+  };
+
+  const current = TESTIMONIALS[currentIndex];
 
   return (
     <div className="mb-4">
@@ -55,27 +72,68 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
         WHAT PEOPLE SAY
       </p>
 
-      <div className="space-y-3">
-        {visible.map((t, idx) => (
-          <Card key={`${t.author}-${idx}`} quote={t.quote} author={t.author} />
-        ))}
+      <div className="relative rounded-2xl border border-[hsl(var(--border))] bg-gradient-to-br from-white to-[hsl(var(--accent))]/5 p-8 shadow-lg">
+        {/* Decorative quotation mark */}
+        <div className="absolute top-4 left-4 text-5xl leading-none text-[hsl(var(--accent))]/20 font-serif">
+          "
+        </div>
 
-        {remaining.length > 0 ? (
-          <details className="group rounded-xl border border-[hsl(var(--border))] bg-white/70 shadow-sm">
-            <summary className="cursor-pointer select-none list-none px-4 py-3 text-sm font-bold text-[hsl(var(--text))] focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 focus-visible:ring-offset-white rounded-xl">
-              <span className="inline-flex items-center gap-2">
-                <span className="inline-block transition-transform group-open:rotate-90">›</span>
-                Show {remaining.length} more testimonial{remaining.length === 1 ? "" : "s"}
-              </span>
-            </summary>
+        {/* Testimonial content with fade animation */}
+        <div 
+          className={`min-h-[140px] flex flex-col justify-center transition-opacity duration-300 ${
+            isAnimating ? 'opacity-0' : 'opacity-100'
+          }`}
+        >
+          <p className="text-base leading-relaxed text-[hsl(var(--text))] font-medium pl-6">
+            {current.quote.replace(/^"|"$/g, '')}
+          </p>
+          <p className="mt-4 text-sm font-bold text-[hsl(var(--accent-deep))] pl-6">
+            {current.author}
+          </p>
+        </div>
 
-            <div className="space-y-3 px-4 pb-4">
-              {remaining.map((t, idx) => (
-                <Card key={`${t.author}-more-${idx}`} quote={t.quote} author={t.author} />
-              ))}
-            </div>
-          </details>
-        ) : null}
+        {/* Navigation controls */}
+        <div className="mt-6 flex items-center justify-between gap-4">
+          <button
+            onClick={goPrev}
+            disabled={isAnimating}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-[hsl(var(--accent))]/20 text-[hsl(var(--text))] text-xl font-bold transition-all hover:bg-[hsl(var(--accent))] hover:text-white hover:border-[hsl(var(--accent))] hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-md hover:shadow-lg"
+            aria-label="Previous testimonial"
+          >
+            ‹
+          </button>
+
+          {/* Dot indicators */}
+          <div className="flex gap-2">
+            {TESTIMONIALS.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => goTo(idx)}
+                disabled={isAnimating}
+                className={`h-2.5 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] disabled:cursor-not-allowed ${
+                  idx === currentIndex
+                    ? "bg-[hsl(var(--accent))] w-8 shadow-sm"
+                    : "bg-[hsl(var(--border))] w-2.5 hover:bg-[hsl(var(--accent))]/50 hover:w-4"
+                }`}
+                aria-label={`Go to testimonial ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={goNext}
+            disabled={isAnimating}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-[hsl(var(--accent))]/20 text-[hsl(var(--text))] text-xl font-bold transition-all hover:bg-[hsl(var(--accent))] hover:text-white hover:border-[hsl(var(--accent))] hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-md hover:shadow-lg"
+            aria-label="Next testimonial"
+          >
+            ›
+          </button>
+        </div>
+
+        {/* Counter */}
+        <p className="mt-4 text-center text-xs font-semibold text-[hsl(var(--muted))]">
+          {currentIndex + 1} / {TESTIMONIALS.length}
+        </p>
       </div>
     </div>
   );
