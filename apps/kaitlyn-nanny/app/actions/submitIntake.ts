@@ -219,7 +219,13 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
   const resendKey = process.env.RESEND_API_KEY;
   
   const to = process.env.KAITLYN_INTAKE_TO;
-  const from = process.env.KAITLYN_INTAKE_FROM || gmailUser || "noreply@localhost";
+  // For Resend, you can use their default sender without DNS/domain setup.
+  const resendFromDefault = "onboarding@resend.dev";
+  const from =
+    process.env.KAITLYN_INTAKE_FROM ||
+    (resendKey ? resendFromDefault : "") ||
+    gmailUser ||
+    "noreply@localhost";
 
   if (!to) {
     console.warn("KAITLYN_INTAKE_TO not set - skipping email notification");
@@ -315,9 +321,15 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
       `Copy of what you submitted:\n\n${text}`;
     
     if (useGmail) {
-      await sendGmailEmail({ to: [requesterEmail], subject: confirmSubject, text, gmailUser: gmailUser!, gmailAppPassword: gmailAppPassword! });
+      await sendGmailEmail({
+        to: [requesterEmail],
+        subject: confirmSubject,
+        text: confirmText,
+        gmailUser: gmailUser!,
+        gmailAppPassword: gmailAppPassword!
+      });
     } else if (useResend) {
-      await sendResendEmail({ to: [requesterEmail], subject: confirmSubject, text, resendKey: resendKey!, from });
+      await sendResendEmail({ to: [requesterEmail], subject: confirmSubject, text: confirmText, resendKey: resendKey!, from });
     }
   }
 }
