@@ -178,8 +178,12 @@ export async function clearKaitlynIntakesWithMeta(): Promise<{ ok: true; meta: K
   // Return success with appropriate metadata
   if (postgresSuccess) {
     return { ok: true, meta: { source: "postgres", usedFallback: false } };
+  } else if (p) {
+    // Postgres was configured but failed, fell back to file
+    return { ok: true, meta: { source: "file", usedFallback: true, reason: "postgres error" } };
   } else {
-    return { ok: true, meta: { source: "file", usedFallback: !p, reason: p ? "postgres error" : "DATABASE_URL not set" } };
+    // No postgres configured, using file by design
+    return { ok: true, meta: { source: "file", usedFallback: false, reason: "DATABASE_URL not set" } };
   }
 }
 
