@@ -115,7 +115,7 @@ export default function Page() {
                     <img 
                       src="/kaitlyn3.jfif" 
                       alt="Kaitlyn with kids"
-                      className="h-full w-full object-cover object-[50%_30%] sm:object-center sm:aspect-square hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover object-[50%_30%] sm:object-[50%_20%] sm:aspect-square hover:scale-105 transition-transform duration-300"
                     />
                   </div>
                 </div>
