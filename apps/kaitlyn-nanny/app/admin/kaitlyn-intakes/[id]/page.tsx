@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 type Intake = {
   id: string;
@@ -42,12 +42,14 @@ function Row({ k, v }: { k: string; v: any }) {
 
 export default function KaitlynIntakeDetailPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
   const id = String(params?.id || "");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<Intake | null>(null);
   const [meta, setMeta] = useState<StorageMeta | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -74,6 +76,27 @@ export default function KaitlynIntakeDetailPage() {
     };
   }, [id]);
 
+  async function handleDelete() {
+    const ok = window.confirm("Delete this submission? This cannot be undone.");
+    if (!ok) return;
+
+    setDeleting(true);
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/kaitlyn-intakes/${encodeURIComponent(id)}`, { 
+        method: "DELETE" 
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Failed to delete");
+      
+      // Redirect back to inbox after successful deletion
+      router.push("/admin/kaitlyn-intakes");
+    } catch (e: any) {
+      setError(String(e?.message || e));
+      setDeleting(false);
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-white to-slate-50 px-3 py-4 sm:px-5 sm:py-6">
       <div className="mx-auto w-full max-w-3xl">
@@ -86,6 +109,13 @@ export default function KaitlynIntakeDetailPage() {
             </div>
           </div>
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleDelete}
+              disabled={deleting || loading}
+              className="rounded-2xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm font-extrabold text-red-700 shadow-sm hover:bg-red-100 disabled:opacity-60"
+            >
+              {deleting ? "Deleting…" : "Delete"}
+            </button>
             <Link href="/admin/kaitlyn-intakes" className="text-sm font-extrabold text-blue-600">
               ← Back to inbox
             </Link>

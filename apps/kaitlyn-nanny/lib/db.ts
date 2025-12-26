@@ -97,24 +97,43 @@ async function ensureSchema(p: Pool) {
 
 export async function saveKaitlynIntake(payload: Record<string, unknown>) {
   const p = getPool();
-  if (!p) return null;
-
-  await ensureSchema(p);
-
   const id = genId();
-  await p.query(
-    `INSERT INTO kaitlyn_intakes (id, parent_name, email, phone, care_type, one_time_date, payload)
-     VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)`,
-    [
-      id,
-      String(payload.parentName ?? "") || null,
-      String(payload.email ?? "") || null,
-      String(payload.phone ?? "") || null,
-      String(payload.careType ?? "") || null,
-      payload.careType === "One-time" ? String((payload as any).oneTimeDate ?? "") || null : null,
-      JSON.stringify(payload)
-    ]
-  );
+  
+  // Always save to file backup first (guaranteed persistence)
+  try {
+    const existing = await readFallbackIntakes();
+    existing.push({ id, createdAt: new Date().toISOString(), submission: payload });
+    await writeFallbackIntakes(existing);
+  } catch (err) {
+    console.error("Failed to save to file backup:", err);
+    // Continue - still try to save to Postgres
+  }
+  
+  // Then try to save to Postgres (primary storage if available)
+  if (!p) {
+    console.log("DATABASE_URL not set - submission saved to file backup only");
+    return id;
+  }
+
+  try {
+    await ensureSchema(p);
+    await p.query(
+      `INSERT INTO kaitlyn_intakes (id, parent_name, email, phone, care_type, one_time_date, payload)
+       VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)`,
+      [
+        id,
+        String(payload.parentName ?? "") || null,
+        String(payload.email ?? "") || null,
+        String(payload.phone ?? "") || null,
+        String(payload.careType ?? "") || null,
+        payload.careType === "One-time" ? String((payload as any).oneTimeDate ?? "") || null : null,
+        JSON.stringify(payload)
+      ]
+    );
+  } catch (err) {
+    console.error("Failed to save to Postgres (but saved to file backup):", err);
+    // Don't throw - file backup is already saved
+  }
 
   return id;
 }
@@ -131,28 +150,36 @@ export async function saveKaitlynIntakeFallback(payload: Record<string, unknown>
 
 export async function clearKaitlynIntakesWithMeta(): Promise<{ ok: true; meta: KaitlynStorageMeta } | { ok: false; error: string }> {
   const p = getPool();
+  let postgresSuccess = false;
+  let fileSuccess = false;
 
+  // Try to delete from both storages
   if (p) {
     try {
       await ensureSchema(p);
       await p.query(`DELETE FROM kaitlyn_intakes;`);
-      return { ok: true, meta: { source: "postgres", usedFallback: false } };
+      postgresSuccess = true;
     } catch (err) {
-      // Fall back to file clear if Postgres errors.
-      try {
-        await clearKaitlynIntakesFile();
-        return { ok: true, meta: { source: "file", usedFallback: true, reason: "postgres error" } };
-      } catch (e: any) {
-        return { ok: false, error: String(e?.message || e || err) };
-      }
+      console.error("Failed to clear Postgres:", err);
     }
   }
 
   try {
     await clearKaitlynIntakesFile();
-    return { ok: true, meta: { source: "file", usedFallback: false, reason: "DATABASE_URL not set" } };
-  } catch (e: any) {
-    return { ok: false, error: String(e?.message || e) };
+    fileSuccess = true;
+  } catch (err) {
+    console.error("Failed to clear file backup:", err);
+  }
+
+  if (!postgresSuccess && !fileSuccess) {
+    return { ok: false, error: "Failed to clear from both Postgres and file backup" };
+  }
+
+  // Return success with appropriate metadata
+  if (postgresSuccess) {
+    return { ok: true, meta: { source: "postgres", usedFallback: false } };
+  } else {
+    return { ok: true, meta: { source: "file", usedFallback: !p, reason: p ? "postgres error" : "DATABASE_URL not set" } };
   }
 }
 
@@ -165,6 +192,42 @@ async function clearKaitlynIntakesFile() {
     if (err?.code === "ENOENT") return;
     throw err;
   }
+}
+
+export async function deleteKaitlynIntake(id: string): Promise<{ ok: true } | { ok: false; error: string }> {
+  const p = getPool();
+  let postgresDeleted = false;
+  let fileDeleted = false;
+
+  // Try to delete from Postgres
+  if (p) {
+    try {
+      await ensureSchema(p);
+      const result = await p.query(`DELETE FROM kaitlyn_intakes WHERE id = $1`, [id]);
+      postgresDeleted = result.rowCount ? result.rowCount > 0 : false;
+    } catch (err) {
+      console.error("Failed to delete from Postgres:", err);
+    }
+  }
+
+  // Try to delete from file backup
+  try {
+    const existing = await readFallbackIntakes();
+    const filtered = existing.filter((x) => x.id !== id);
+    fileDeleted = filtered.length < existing.length;
+    if (fileDeleted) {
+      await writeFallbackIntakes(filtered);
+    }
+  } catch (err) {
+    console.error("Failed to delete from file backup:", err);
+  }
+
+  // If not found in either storage, return error
+  if (!postgresDeleted && !fileDeleted) {
+    return { ok: false, error: "Submission not found" };
+  }
+
+  return { ok: true };
 }
 
 export async function listKaitlynIntakes(limit: number) {

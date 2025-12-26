@@ -87,6 +87,29 @@ export default function KaitlynIntakesAdminPage() {
     }
   }
 
+  async function deleteIndividual(id: string, e: React.MouseEvent) {
+    e.preventDefault(); // Prevent navigation to detail page
+    e.stopPropagation(); // Stop event bubbling
+    
+    const ok = window.confirm("Delete this submission? This cannot be undone.");
+    if (!ok) return;
+
+    setError("");
+    try {
+      const res = await fetch(`/api/admin/kaitlyn-intakes/${encodeURIComponent(id)}`, { 
+        method: "DELETE" 
+      });
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok || !json.ok) throw new Error(json.error || "Failed to delete");
+      
+      // Remove from local state
+      setRows((prev) => prev.filter((r) => r.id !== id));
+      setLastUpdated(new Date().toLocaleTimeString());
+    } catch (e: any) {
+      setError(String(e?.message || e));
+    }
+  }
+
   useEffect(() => {
     let mounted = true;
     setLoading(true);
@@ -182,7 +205,7 @@ export default function KaitlynIntakesAdminPage() {
                 className="block px-4 py-4 hover:bg-slate-50"
               >
                 <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="truncate text-base font-extrabold text-slate-900">{r.parent_name || "—"}</div>
                     <div className="mt-1 text-sm font-semibold text-slate-700">
                       <span className="text-slate-500">Care:</span> {r.care_type || "—"}
@@ -206,9 +229,18 @@ export default function KaitlynIntakesAdminPage() {
                     </div>
                   </div>
 
-                  <div className="shrink-0 text-right">
+                  <div className="shrink-0 text-right flex flex-col items-end gap-2">
                     <div className="text-xs font-extrabold text-slate-500">{fmt(r.created_at)}</div>
-                    <div className="mt-2 text-sm font-extrabold text-blue-600">View →</div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => deleteIndividual(r.id, e)}
+                        className="rounded-lg border border-red-200 bg-red-50 px-3 py-1.5 text-xs font-extrabold text-red-700 hover:bg-red-100 transition-colors"
+                        title="Delete this submission"
+                      >
+                        Delete
+                      </button>
+                      <div className="text-sm font-extrabold text-blue-600">View →</div>
+                    </div>
                   </div>
                 </div>
               </Link>

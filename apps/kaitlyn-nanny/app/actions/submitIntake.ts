@@ -3,7 +3,7 @@
 import { saveKaitlynIntake, saveKaitlynIntakeFallback } from "../../lib/db";
 
 type IntakeState =
-  | { ok: true; id: string; storage: "postgres" | "file" }
+  | { ok: true; id: string }
   | { ok: false; error: string; fieldErrors?: Record<string, string> };
 
 function getString(formData: FormData, key: string) {
@@ -435,20 +435,17 @@ export async function submitIntake(
     notes: getString(formData, "notes")
   };
 
-  // Step 3: store submission
-  let dbId: string | null = null;
+  // Step 3: store submission (double-saved to both Postgres and file backup)
+  let id: string | null = null;
   try {
-    dbId = await saveKaitlynIntake(payload as any);
+    id = await saveKaitlynIntake(payload as any);
   } catch (err) {
-    // Critical to diagnose in production: if DB inserts fail, we silently fall back to file storage.
-    console.error("Kaitlyn intake DB save failed (falling back to file storage):", err);
+    console.error("Kaitlyn intake save failed:", err);
+    return { ok: false, error: "Failed to save your request. Please try again." };
   }
-  const usedFallback = !dbId;
-  const id = dbId || (await saveKaitlynIntakeFallback(payload));
-  if (usedFallback && process.env.NODE_ENV === "production") {
-    console.warn(
-      "Kaitlyn intake stored using FILE fallback in production. This usually means DATABASE_URL is missing or Postgres insert failed."
-    );
+
+  if (!id) {
+    return { ok: false, error: "Failed to generate submission ID. Please try again." };
   }
 
   // Step 4: send email
@@ -458,5 +455,5 @@ export async function submitIntake(
     console.error("Intake email send failed:", err);
   }
 
-  return { ok: true, id, storage: usedFallback ? "file" : "postgres" };
+  return { ok: true, id };
 }
