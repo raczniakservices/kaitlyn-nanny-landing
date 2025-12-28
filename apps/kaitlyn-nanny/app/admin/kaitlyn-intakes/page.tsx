@@ -178,13 +178,27 @@ export default function KaitlynIntakesAdminPage() {
         ) : null}
 
         {meta ? (
-          <div className="mt-4 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-700">
+          <div
+            className={[
+              "mt-4 rounded-2xl border px-4 py-3 text-xs font-semibold",
+              meta.source === "postgres"
+                ? "border-slate-200 bg-white text-slate-700"
+                : "border-amber-200 bg-amber-50 text-amber-900"
+            ].join(" ")}
+          >
             <span className="font-extrabold text-slate-900">Storage:</span>{" "}
             {meta.source === "postgres" ? "Postgres (persistent)" : "File fallback (may be temporary)"}
             {meta.source === "file" ? (
               <span className="text-slate-500"> · {meta.reason}</span>
             ) : null}
             {meta.usedFallback ? <span className="ml-1 text-amber-700">· using fallback right now</span> : null}
+            {meta.source === "file" ? (
+              <div className="mt-2 text-xs font-bold text-amber-900">
+                WARNING: When running on file fallback, requests can be lost on deploy/restart unless you configure{" "}
+                <span className="font-extrabold">DATABASE_URL</span> (recommended) or a persistent disk mount for{" "}
+                <span className="font-extrabold">KAITLYN_DATA_DIR</span>.
+              </div>
+            ) : null}
           </div>
         ) : null}
 

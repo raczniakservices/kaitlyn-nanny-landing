@@ -28,6 +28,10 @@ services:
     rootDir: apps/kaitlyn-nanny
     buildCommand: npm install --no-audit --no-fund --workspaces=false && npm run build
     startCommand: npm run start
+    disk:
+      name: kaitlyn-nanny-data
+      mountPath: /var/data
+      sizeGB: 1
     envVars:
       - key: NODE_VERSION
         value: 20.11.1
@@ -37,6 +41,8 @@ services:
         fromDatabase:
           name: kaitlyn-nanny-postgres
           property: connectionString
+      - key: KAITLYN_DATA_DIR
+        value: /var/data
       # Optional email sending via Resend (recommended)
       # - key: RESEND_API_KEY
       #   sync: false

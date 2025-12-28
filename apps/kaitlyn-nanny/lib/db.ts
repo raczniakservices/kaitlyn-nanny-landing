@@ -29,7 +29,20 @@ async function resolveKaitlynDataDir() {
   if (override) return override;
 
   const isProd = process.env.NODE_ENV === "production";
-  if (isProd) return os.tmpdir();
+  if (isProd) {
+    // In production (Render), prefer a disk mount if present so backups survive deploys/restarts.
+    // Common mount path we use: /var/data
+    const candidates = ["/var/data", "/data"];
+    for (const dir of candidates) {
+      try {
+        const st = await fs.stat(dir);
+        if (st.isDirectory()) return dir;
+      } catch {
+        // ignore
+      }
+    }
+    return os.tmpdir();
+  }
 
   // Monorepo-friendly default: prefer apps/kaitlyn-nanny/data if it exists.
   const candidate = path.join(process.cwd(), "apps", "kaitlyn-nanny", "data");
@@ -67,15 +80,35 @@ async function readFallbackIntakes(): Promise<FileStoredIntake[]> {
     const raw = await fs.readFile(filePath, "utf8");
     const parsed = JSON.parse(raw);
     if (Array.isArray(parsed)) return parsed as FileStoredIntake[];
-  } catch {
-    // first run / unreadable
+    throw new Error("Invalid file format for kaitlyn-intakes.json");
+  } catch (err: any) {
+    // first run / missing file
+    if (err?.code === "ENOENT") return [];
+    throw err;
   }
-  return [];
 }
 
 async function writeFallbackIntakes(intakes: FileStoredIntake[]) {
   const filePath = await fallbackFilePath();
   await fs.writeFile(filePath, JSON.stringify(intakes, null, 2), "utf8");
+}
+
+async function safeReadFallbackIntakes(): Promise<FileStoredIntake[]> {
+  try {
+    return await readFallbackIntakes();
+  } catch (err) {
+    // If the file is corrupted/unreadable, quarantine it so we can start fresh
+    // instead of silently returning [] (which looks like "no submissions").
+    try {
+      const filePath = await fallbackFilePath();
+      const ts = new Date().toISOString().replace(/[:.]/g, "-");
+      await fs.rename(filePath, `${filePath}.corrupt-${ts}`);
+    } catch {
+      // ignore quarantine errors
+    }
+    console.error("Failed to read fallback intake storage; starting a new file:", err);
+    return [];
+  }
 }
 
 async function ensureSchema(p: Pool) {
@@ -101,7 +134,7 @@ export async function saveKaitlynIntake(payload: Record<string, unknown>) {
   
   // Always save to file backup first (guaranteed persistence)
   try {
-    const existing = await readFallbackIntakes();
+    const existing = await safeReadFallbackIntakes();
     existing.push({ id, createdAt: new Date().toISOString(), submission: payload });
     await writeFallbackIntakes(existing);
   } catch (err) {
@@ -142,7 +175,7 @@ export async function saveKaitlynIntakeFallback(payload: Record<string, unknown>
   // Used when DATABASE_URL isn't configured. This is still useful for dev/demo,
   // but note: in production (Render) this uses an ephemeral filesystem unless you mount a disk.
   const id = genId();
-  const existing = await readFallbackIntakes();
+  const existing = await safeReadFallbackIntakes();
   existing.push({ id, createdAt: new Date().toISOString(), submission: payload });
   await writeFallbackIntakes(existing);
   return id;
@@ -216,7 +249,7 @@ export async function deleteKaitlynIntake(id: string): Promise<{ ok: true } | { 
 
   // Try to delete from file backup
   try {
-    const existing = await readFallbackIntakes();
+    const existing = await safeReadFallbackIntakes();
     const filtered = existing.filter((x) => x.id !== id);
     fileDeleted = filtered.length < existing.length;
     if (fileDeleted) {
@@ -300,7 +333,7 @@ export async function getKaitlynIntakeWithMeta(
 }
 
 async function listKaitlynIntakesFromFile(lim: number) {
-  const stored = await readFallbackIntakes();
+  const stored = await safeReadFallbackIntakes();
   // newest first
   const sliced = stored
     .slice()
@@ -322,7 +355,7 @@ async function listKaitlynIntakesFromFile(lim: number) {
 }
 
 async function getKaitlynIntakeFromFile(id: string) {
-  const stored = await readFallbackIntakes();
+  const stored = await safeReadFallbackIntakes();
   const found = stored.find((x) => x.id === id);
   if (!found) return null;
   return {
