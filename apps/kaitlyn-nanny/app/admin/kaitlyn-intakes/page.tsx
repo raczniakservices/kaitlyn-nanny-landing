@@ -18,6 +18,15 @@ type StorageMeta =
   | { source: "file"; usedFallback: false; reason: string }
   | { source: "file"; usedFallback: true; reason: string };
 
+type StorageHealth = {
+  fileDir: string;
+  filePath: string;
+  fileExists: boolean;
+  fileWritable: boolean;
+  filePersistent: boolean;
+  postgresConfigured: boolean;
+};
+
 function fmt(dt: string) {
   try {
     return new Intl.DateTimeFormat(undefined, {
@@ -39,6 +48,7 @@ export default function KaitlynIntakesAdminPage() {
   const [deleting, setDeleting] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>("");
   const [meta, setMeta] = useState<StorageMeta | null>(null);
+  const [health, setHealth] = useState<StorageHealth | null>(null);
 
   function mergeRows(prev: IntakeRow[], incoming: IntakeRow[]) {
     const byId = new Map<string, IntakeRow>();
@@ -59,6 +69,7 @@ export default function KaitlynIntakesAdminPage() {
       const incoming = (json.intakes || []) as IntakeRow[];
       setRows((prev) => mergeRows(prev, incoming));
       setMeta(json.meta || null);
+      setHealth(json.health || null);
       setLastUpdated(new Date().toLocaleTimeString());
     } catch (e: any) {
       setError(String(e?.message || e));
@@ -181,23 +192,23 @@ export default function KaitlynIntakesAdminPage() {
           <div
             className={[
               "mt-4 rounded-2xl border px-4 py-3 text-xs font-semibold",
-              meta.source === "postgres"
+              meta.source === "postgres" || (meta.source === "file" && health?.filePersistent)
                 ? "border-slate-200 bg-white text-slate-700"
                 : "border-amber-200 bg-amber-50 text-amber-900"
             ].join(" ")}
           >
             <span className="font-extrabold text-slate-900">Storage:</span>{" "}
-            {meta.source === "postgres" ? "Postgres (persistent)" : "File fallback (may be temporary)"}
+            {meta.source === "postgres"
+              ? "Postgres (persistent)"
+              : health?.filePersistent
+                ? "Persistent disk storage"
+                : "Temporary file storage"}
             {meta.source === "file" ? (
               <span className="text-slate-500"> · {meta.reason}</span>
             ) : null}
             {meta.usedFallback ? <span className="ml-1 text-amber-700">· using fallback right now</span> : null}
-            {meta.source === "file" ? (
-              <div className="mt-2 text-xs font-bold text-amber-900">
-                WARNING: When running on file fallback, requests can be lost on deploy/restart unless you configure{" "}
-                <span className="font-extrabold">DATABASE_URL</span> (recommended) or a persistent disk mount for{" "}
-                <span className="font-extrabold">KAITLYN_DATA_DIR</span>.
-              </div>
+            {meta.source === "file" && health?.filePersistent ? (
+              <span className="text-slate-500"> · saved under {health.fileDir}</span>
             ) : null}
           </div>
         ) : null}

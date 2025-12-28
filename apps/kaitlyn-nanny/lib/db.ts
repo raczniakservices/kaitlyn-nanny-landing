@@ -88,6 +88,7 @@ export async function getKaitlynStorageHealth(): Promise<{
   filePath: string;
   fileExists: boolean;
   fileWritable: boolean;
+  filePersistent: boolean;
 }> {
   const p = getPool();
   const postgresConfigured = !!p;
@@ -117,7 +118,9 @@ export async function getKaitlynStorageHealth(): Promise<{
 
   // "ok" means we have at least one durable place to write.
   const ok = postgresConfigured || fileWritable;
-  return { ok, postgresConfigured, fileDir, filePath, fileExists, fileWritable };
+  // In our deployment, temp storage is os.tmpdir() (typically /tmp). Disk mounts (e.g. /var/data) are persistent.
+  const filePersistent = fileDir !== os.tmpdir();
+  return { ok, postgresConfigured, fileDir, filePath, fileExists, fileWritable, filePersistent };
 }
 
 async function readFallbackIntakes(): Promise<FileStoredIntake[]> {
