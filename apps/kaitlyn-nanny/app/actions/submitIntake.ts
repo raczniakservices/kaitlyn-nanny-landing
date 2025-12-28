@@ -438,7 +438,8 @@ export async function submitIntake(
   // Step 3: store submission (double-saved to both Postgres and file backup)
   let id: string | null = null;
   try {
-    id = await saveKaitlynIntake(payload as any);
+    const saved = await saveKaitlynIntake(payload as any);
+    id = saved?.id || null;
   } catch (err) {
     console.error("Kaitlyn intake save failed:", err);
     return { ok: false, error: "Failed to save your request. Please try again." };

@@ -74,6 +74,52 @@ export type KaitlynStorageMeta =
   | { source: "file"; usedFallback: false; reason: "DATABASE_URL not set" }
   | { source: "file"; usedFallback: true; reason: "postgres error" };
 
+export type KaitlynSaveMeta = {
+  id: string;
+  storedToFile: boolean;
+  storedToPostgres: boolean;
+  postgresConfigured: boolean;
+};
+
+export async function getKaitlynStorageHealth(): Promise<{
+  ok: boolean;
+  postgresConfigured: boolean;
+  fileDir: string;
+  filePath: string;
+  fileExists: boolean;
+  fileWritable: boolean;
+}> {
+  const p = getPool();
+  const postgresConfigured = !!p;
+
+  const fileDir = await resolveKaitlynDataDir();
+  const filePath = await fallbackFilePath();
+
+  let fileExists = false;
+  try {
+    await fs.stat(filePath);
+    fileExists = true;
+  } catch {
+    fileExists = false;
+  }
+
+  let fileWritable = false;
+  try {
+    // best-effort: ensure directory is writable
+    await fs.mkdir(fileDir, { recursive: true });
+    const probe = path.join(fileDir, `.write-probe-${Date.now()}.tmp`);
+    await fs.writeFile(probe, "ok", "utf8");
+    await fs.unlink(probe);
+    fileWritable = true;
+  } catch {
+    fileWritable = false;
+  }
+
+  // "ok" means we have at least one durable place to write.
+  const ok = postgresConfigured || fileWritable;
+  return { ok, postgresConfigured, fileDir, filePath, fileExists, fileWritable };
+}
+
 async function readFallbackIntakes(): Promise<FileStoredIntake[]> {
   const filePath = await fallbackFilePath();
   try {
@@ -128,24 +174,30 @@ async function ensureSchema(p: Pool) {
   schemaEnsured = true;
 }
 
-export async function saveKaitlynIntake(payload: Record<string, unknown>) {
+export async function saveKaitlynIntake(payload: Record<string, unknown>): Promise<KaitlynSaveMeta> {
   const p = getPool();
   const id = genId();
+  let storedToFile = false;
+  let storedToPostgres = false;
   
   // Always save to file backup first (guaranteed persistence)
   try {
     const existing = await safeReadFallbackIntakes();
     existing.push({ id, createdAt: new Date().toISOString(), submission: payload });
     await writeFallbackIntakes(existing);
+    storedToFile = true;
   } catch (err) {
     console.error("Failed to save to file backup:", err);
-    // Continue - still try to save to Postgres
   }
   
   // Then try to save to Postgres (primary storage if available)
   if (!p) {
     console.log("DATABASE_URL not set - submission saved to file backup only");
-    return id;
+    if (!storedToFile) {
+      // Never silently accept a request that we didn't actually persist anywhere.
+      throw new Error("Failed to persist intake: DATABASE_URL not set and file backup write failed");
+    }
+    return { id, storedToFile, storedToPostgres, postgresConfigured: false };
   }
 
   try {
@@ -163,12 +215,17 @@ export async function saveKaitlynIntake(payload: Record<string, unknown>) {
         JSON.stringify(payload)
       ]
     );
+    storedToPostgres = true;
   } catch (err) {
-    console.error("Failed to save to Postgres (but saved to file backup):", err);
-    // Don't throw - file backup is already saved
+    console.error("Failed to save to Postgres:", err);
   }
 
-  return id;
+  if (!storedToFile && !storedToPostgres) {
+    // Never silently accept a request that we didn't actually persist anywhere.
+    throw new Error("Failed to persist intake: both Postgres and file backup writes failed");
+  }
+
+  return { id, storedToFile, storedToPostgres, postgresConfigured: true };
 }
 
 export async function saveKaitlynIntakeFallback(payload: Record<string, unknown>) {
