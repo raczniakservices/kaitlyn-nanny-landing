@@ -30,8 +30,28 @@ function fmt(dt: string) {
   }
 }
 
+function fmtTimeHHMM(t: string) {
+  // Admin display helper: convert stored HH:mm (24h) into 12-hour time with AM/PM.
+  const m = /^(\d{1,2}):(\d{2})$/.exec(String(t).trim());
+  if (!m) return t;
+  const hh24 = Number(m[1]);
+  const mm = Number(m[2]);
+  if (!Number.isFinite(hh24) || !Number.isFinite(mm)) return t;
+  if (hh24 < 0 || hh24 > 23 || mm < 0 || mm > 59) return t;
+  const ampm = hh24 >= 12 ? "PM" : "AM";
+  const hh12 = hh24 % 12 === 0 ? 12 : hh24 % 12;
+  return `${hh12}:${String(mm).padStart(2, "0")} ${ampm}`;
+}
+
 function Row({ k, v }: { k: string; v: any }) {
-  const value = typeof v === "string" ? v : v == null ? "" : JSON.stringify(v, null, 2);
+  const value =
+    typeof v === "string"
+      ? (k === "startTime" || k === "endTime")
+        ? fmtTimeHHMM(v)
+        : v
+      : v == null
+        ? ""
+        : JSON.stringify(v, null, 2);
   return (
     <div className="mt-3 border-t border-slate-100 pt-3">
       <div className="text-xs font-extrabold text-slate-500">{k}</div>
