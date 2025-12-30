@@ -26,6 +26,14 @@ body {
 html {
   color-scheme: light;
   background-color: hsl(var(--bg));
+  scroll-behavior: smooth;
+}
+
+/* Make hash jumps feel intentional (e.g. #availability) */
+#availability:target {
+  box-shadow: 0 0 0 4px hsla(var(--accent), 0.22);
+  outline: 1px solid hsla(var(--accent-deep), 0.2);
+  border-radius: 16px;
 }
 
 body {

@@ -424,8 +424,7 @@ function SectionCard({
     children: React.ReactNode;
 }) {
     return (
-        <div className="rounded-2xl border border-[hsl(var(--border))] bg-white p-7 shadow-sm hover:shadow-lg hover:border-[hsl(var(--accent))]/40 transition-all duration-500 animate-slide-up relative overflow-hidden group">
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[hsl(var(--accent))]/6 via-transparent to-[hsl(var(--lavender))]/6 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div className="rounded-2xl border border-[hsl(var(--border))] bg-white p-7 shadow-sm relative overflow-hidden">
             <p className="text-sm font-bold uppercase tracking-widest text-[hsl(var(--accent-deep))] relative z-10">{title}</p>
             <div className="mt-6 relative z-10">{children}</div>
         </div>
@@ -1107,9 +1106,10 @@ export function IntakeForm() {
 
                     <SubmitButton />
 
-                    <p className="mt-4 text-center text-xs text-[hsl(var(--muted))]">
-                        Your information goes directly to Kaitlyn. No spam, ever.
-                    </p>
+                    <div className="mt-4 space-y-1 text-center text-xs text-[hsl(var(--muted))]">
+                        <p>This is a request, not a commitment.</p>
+                        <p>Your information goes directly to Kaitlyn. No spam, ever.</p>
+                    </div>
                 </form>
             </div>
 

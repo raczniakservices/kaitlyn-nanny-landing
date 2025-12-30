@@ -93,11 +93,7 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
         WHAT PEOPLE SAY
       </p>
 
-      <div className="relative rounded-2xl border border-[hsl(var(--border))] bg-gradient-to-br from-white to-[hsl(var(--accent))]/5 p-8 shadow-lg">
-        {/* Decorative quotation mark */}
-        <div className="absolute top-4 left-4 text-5xl leading-none text-[hsl(var(--accent))]/20 font-serif">
-          &ldquo;
-        </div>
+      <div className="relative rounded-2xl border border-[hsl(var(--border))] bg-white/90 p-8 shadow-sm">
 
         {/* Testimonial content with fade animation */}
         <div 
@@ -105,10 +101,10 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
             isAnimating ? 'opacity-0' : 'opacity-100'
           }`}
         >
-          <p className="text-base leading-relaxed text-[hsl(var(--text))] font-medium pl-6">
+          <p className="text-base leading-relaxed text-[hsl(var(--text))] font-semibold">
             {current.quote.replace(/^"|"$/g, '')}
           </p>
-          <p className="mt-4 text-sm font-bold text-[hsl(var(--accent-deep))] pl-6">
+          <p className="mt-4 text-sm font-semibold text-[hsl(var(--text))]/80">
             {current.author}
           </p>
         </div>
@@ -118,7 +114,7 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
           <button
             onClick={goPrev}
             disabled={isAnimating}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-[hsl(var(--accent))]/20 text-[hsl(var(--text))] text-xl font-bold transition-all hover:bg-[hsl(var(--accent))] hover:text-white hover:border-[hsl(var(--accent))] hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-md hover:shadow-lg"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[hsl(var(--border))] text-[hsl(var(--text))] text-xl font-semibold transition-colors hover:bg-[hsl(var(--bg))] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-sm"
             aria-label="Previous testimonial"
           >
             ‹
@@ -144,7 +140,7 @@ export function Testimonials({ initiallyVisible = 2 }: { initiallyVisible?: numb
           <button
             onClick={goNext}
             disabled={isAnimating}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border-2 border-[hsl(var(--accent))]/20 text-[hsl(var(--text))] text-xl font-bold transition-all hover:bg-[hsl(var(--accent))] hover:text-white hover:border-[hsl(var(--accent))] hover:scale-110 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-md hover:shadow-lg"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white border border-[hsl(var(--border))] text-[hsl(var(--text))] text-xl font-semibold transition-colors hover:bg-[hsl(var(--bg))] disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--accent))] focus-visible:ring-offset-2 shadow-sm"
             aria-label="Next testimonial"
           >
             ›
