@@ -72,7 +72,14 @@ type FileStoredIntake = {
 export type KaitlynStorageMeta =
   | { source: "postgres"; usedFallback: false }
   | { source: "file"; usedFallback: false; reason: "DATABASE_URL not set" }
-  | { source: "file"; usedFallback: true; reason: "postgres error" };
+  | { source: "file"; usedFallback: true; reason: "postgres error" | "not found in postgres" };
+
+function mergeById<T extends { id: string }>(a: T[], b: T[]) {
+  const m = new Map<string, T>();
+  for (const x of a) m.set(String(x.id), x);
+  for (const x of b) m.set(String(x.id), x);
+  return Array.from(m.values());
+}
 
 export type KaitlynSaveMeta = {
   id: string;
@@ -345,7 +352,13 @@ export async function listKaitlynIntakesWithMeta(limit: number): Promise<{ rows:
          LIMIT $1`,
         [lim]
       );
-      return { rows, meta: { source: "postgres", usedFallback: false } };
+      // Safety net: if Postgres inserts fail but file backup succeeds, the inbox would look empty.
+      // Merge in file-backed intakes so Kaitlyn always sees submissions.
+      const fileRows = await listKaitlynIntakesFromFile(lim);
+      const merged = mergeById(rows || [], fileRows || []).sort((a, b) =>
+        String((b as any).created_at).localeCompare(String((a as any).created_at))
+      );
+      return { rows: merged.slice(0, lim), meta: { source: "postgres", usedFallback: false } };
     } catch {
       // If Postgres is temporarily unreachable, fall back to the same local storage
       // used by the form submit action (best-effort admin UX).
@@ -376,7 +389,13 @@ export async function getKaitlynIntakeWithMeta(
          LIMIT 1`,
         [id]
       );
-      return { row: rows[0] || null, meta: { source: "postgres", usedFallback: false } };
+      const row = rows[0] || null;
+      if (row) return { row, meta: { source: "postgres", usedFallback: false } };
+
+      // Postgres reachable but record missing — check file backup.
+      const fileRow = await getKaitlynIntakeFromFile(id);
+      if (fileRow) return { row: fileRow, meta: { source: "file", usedFallback: true, reason: "not found in postgres" } };
+      return { row: null, meta: { source: "postgres", usedFallback: false } };
     } catch {
       // fall back to file storage below
       const row = await getKaitlynIntakeFromFile(id);
