@@ -434,6 +434,7 @@ function SectionCard({
 export function IntakeForm() {
     const [values, setValues] = useState<FormValues>(initial);
     const [clientErrors, setClientErrors] = useState<ClientErrors>({});
+    const [submitAttempted, setSubmitAttempted] = useState(false);
 
     const [state, action] = useFormState(submitIntake as any, { ok: false, error: "" });
 
@@ -449,10 +450,66 @@ export function IntakeForm() {
     const maxDate = useMemo(() => addMonthsISO(isoTodayLocal(), 6), []);
     const allowedDateOptions = useMemo(() => allowedDatesInRange(minDate, maxDate), [minDate, maxDate]);
 
+    const FIELD_ORDER: (keyof FormValues)[] = [
+        "familyType",
+        "referralSource",
+        "referralDetails",
+        "metKaitlyn",
+        "wantsInterview",
+        "returningChanges",
+        "parentName",
+        "email",
+        "phone",
+        "contactMethod",
+        "city",
+        "zip",
+        "careType",
+        "oneTimeDate",
+        "occasionalNotes",
+        "recurringNotes",
+        "notSureDateNotes",
+        "startTime",
+        "endTime",
+        "requestOutsideHours",
+        "outsideHoursNotes",
+        "numChildren",
+        "ages",
+        "hasAllergiesOrNeeds",
+        "allergiesNotes",
+        "servicesNeeded",
+        "notes"
+    ];
+
+    function scrollToFirstError(errs: ClientErrors) {
+        // Scroll/focus the first field with an error so submit doesn't feel "dead".
+        for (const key of FIELD_ORDER) {
+            const msg = errs[String(key)];
+            if (!msg) continue;
+
+            const el = document.querySelector(`[name="${String(key)}"]`) as HTMLElement | null;
+            if (el) {
+                el.scrollIntoView({ behavior: "smooth", block: "center" });
+                // Focus after scroll; preventScroll avoids jumping twice.
+                // (Some inputs like radio/checkbox are focusable too.)
+                // @ts-expect-error focus options not in older TS lib defs
+                el.focus?.({ preventScroll: true });
+                return;
+            }
+        }
+
+        // Fallback: if we couldn't find a specific field element, scroll to top of form.
+        const formTop = document.querySelector("form") as HTMLElement | null;
+        formTop?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
     function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+        setSubmitAttempted(true);
         const errs = validateAll(values);
         setClientErrors(errs);
-        if (Object.keys(errs).length > 0) e.preventDefault();
+        if (Object.keys(errs).length > 0) {
+            e.preventDefault();
+            scrollToFirstError(errs);
+        }
     }
 
     function setWeekendDateField<K extends keyof FormValues>(key: K, iso: string) {
@@ -1105,6 +1162,12 @@ export function IntakeForm() {
                     </SectionCard>
 
                     <SubmitButton />
+
+                    {submitAttempted && Object.keys(clientErrors).length > 0 ? (
+                        <p className="mt-3 text-center text-sm font-semibold text-red-700">
+                            Please review the highlighted fields above.
+                        </p>
+                    ) : null}
 
                     <div className="mt-4 space-y-1 text-center text-xs text-[hsl(var(--muted))]">
                         <p>This is a request, not a commitment.</p>
