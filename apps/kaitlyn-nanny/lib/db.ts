@@ -392,7 +392,7 @@ export async function getKaitlynIntakeWithMeta(
       const row = rows[0] || null;
       if (row) return { row, meta: { source: "postgres", usedFallback: false } };
 
-      // Postgres reachable but record missing — check file backup.
+      // Postgres reachable but record missing; check file backup.
       const fileRow = await getKaitlynIntakeFromFile(id);
       if (fileRow) return { row: fileRow, meta: { source: "file", usedFallback: true, reason: "not found in postgres" } };
       return { row: null, meta: { source: "postgres", usedFallback: false } };

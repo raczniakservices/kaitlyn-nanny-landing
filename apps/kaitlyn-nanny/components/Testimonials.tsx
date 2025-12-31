@@ -10,32 +10,32 @@ const TESTIMONIALS: Testimonial[] = [
   {
     quote:
       "\"Kaitlyn is amazing with children, I see her in action! She's patient, caring and trustworthy! 💗\"",
-    author: "— Robin M."
+    author: "Robin M."
   },
   {
     quote:
       "\"Kaitlyn is one of the few people I fully trust to watch my kids. My husband and I can have a worry-free night out when they are under her care.\"",
-    author: "— Jenny M. S."
+    author: "Jenny M. S."
   },
   {
     quote:
       "\"Kaitlyn is wonderful with children. Not only does she put their safety first, she also tries to make sure they have fun. Her communication is amazing and we never have to worry about our kids while she is with them.\"",
-    author: "— Nikita P. R."
+    author: "Nikita P. R."
   },
   {
     quote:
       "\"She has a heart for children, you will be blessed to have your child in her care♡\"",
-    author: "— Maxine D. M. J."
+    author: "Maxine D. M. J."
   },
   {
     quote:
       "\"I worked with Kaitlyn at celebre e for a year and I would always be excited to see when we were assigned to the same room for the day because I knew I had a reliable teacher who would be engaged with the children all day!\"",
-    author: "— Rachel W."
+    author: "Rachel W."
   },
   {
     quote:
       "\"Kaitlyn is amazing!!! My 4 kids love her!! She's so patient esp with my 8 year old who is hard to calm at night. She's my kids favorite sitter!!!! ❤️\"",
-    author: "— Melanie D."
+    author: "Melanie D."
   }
 ];
 

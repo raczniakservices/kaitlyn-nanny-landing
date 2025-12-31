@@ -231,9 +231,9 @@ export default function KaitlynIntakesAdminPage() {
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
-                    <div className="truncate text-base font-extrabold text-slate-900">{r.parent_name || "—"}</div>
+                    <div className="truncate text-base font-extrabold text-slate-900">{r.parent_name || "N/A"}</div>
                     <div className="mt-1 text-sm font-semibold text-slate-700">
-                      <span className="text-slate-500">Care:</span> {r.care_type || "—"}
+                      <span className="text-slate-500">Care:</span> {r.care_type || "N/A"}
                       {r.one_time_date ? (
                         <span className="text-slate-500"> · Date:</span>
                       ) : null}

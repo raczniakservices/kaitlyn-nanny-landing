@@ -317,7 +317,7 @@ async function maybeSendEmails(payload: Record<string, unknown>) {
   if (sendConfirmation && requesterEmail.includes("@")) {
     const confirmSubject = "We received your care request";
     const confirmText =
-      `Thanks — we received your request and Kaitlyn will follow up within 24 hours.\n\n` +
+      `Thanks, we received your request and Kaitlyn will follow up within 24 hours.\n\n` +
       `Copy of what you submitted:\n\n${text}`;
     
     if (useGmail) {

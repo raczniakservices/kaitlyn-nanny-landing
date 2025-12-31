@@ -491,7 +491,6 @@ export function IntakeForm() {
                 el.scrollIntoView({ behavior: "smooth", block: "center" });
                 // Focus after scroll; preventScroll avoids jumping twice.
                 // (Some inputs like radio/checkbox are focusable too.)
-                // @ts-expect-error focus options not in older TS lib defs
                 el.focus?.({ preventScroll: true });
                 return;
             }

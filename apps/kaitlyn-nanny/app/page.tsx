@@ -33,7 +33,7 @@ export default function Page() {
                 </h1>
 
                 <p className="mt-4 text-base sm:text-lg text-[hsl(var(--text))]/85 leading-relaxed max-w-2xl mx-auto">
-                  Thoughtful, steady care with clear communication—so your kids feel comfortable and you can step out with confidence.
+                  Thoughtful, steady care with clear communication, so your kids feel comfortable and you can step out with confidence.
                 </p>
 
                 <div className="mt-6 flex flex-col items-center justify-center gap-2">
@@ -165,7 +165,7 @@ export default function Page() {
                   
                   <div>
                     <p className="text-sm font-bold text-[hsl(var(--text))]">Do you have CPR certification?</p>
-                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes—CPR and First Aid certified.</p>
+                    <p className="mt-1 text-sm text-[hsl(var(--text))]/80">Yes, CPR and First Aid certified.</p>
                   </div>
                   
                   <div>
