@@ -1,0 +1,1078 @@
+const path = require("path");
+const fs = require("fs");
+const crypto = require("crypto");
+const express = require("express");
+const Database = require("better-sqlite3");
+
+// Load .env if present
+try {
+  // eslint-disable-next-line global-require
+  require("dotenv").config({ path: path.join(__dirname, ".env") });
+} catch {
+  // ignore
+}
+
+const PORT = Number(process.env.PORT || 4173);
+const DEMO_KEY = process.env.DEMO_KEY ? String(process.env.DEMO_KEY) : "";
+const DATABASE_PATH = process.env.DATABASE_PATH
+  ? String(process.env.DATABASE_PATH)
+  : "./data/calls.sqlite";
+
+// Optional: append-only backup for landing page form submissions (JSONL file)
+const LANDING_BACKUP_PATH = process.env.LANDING_BACKUP_PATH
+  ? String(process.env.LANDING_BACKUP_PATH)
+  : "./data/landing-form-submissions.jsonl";
+
+// Twilio webhook verification + optional call forwarding
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN
+  ? String(process.env.TWILIO_AUTH_TOKEN)
+  : "";
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID
+  ? String(process.env.TWILIO_ACCOUNT_SID)
+  : "";
+const TWILIO_NUMBER = process.env.TWILIO_NUMBER ? String(process.env.TWILIO_NUMBER) : "";
+const TWILIO_FORWARD_TO = process.env.TWILIO_FORWARD_TO
+  ? String(process.env.TWILIO_FORWARD_TO)
+  : "";
+const TWILIO_VALIDATE_SIGNATURE =
+  String(process.env.TWILIO_VALIDATE_SIGNATURE || "1") !== "0";
+
+const resolvedDbPath = path.isAbsolute(DATABASE_PATH)
+  ? DATABASE_PATH
+  : path.join(__dirname, DATABASE_PATH);
+
+const resolvedLandingBackupPath = path.isAbsolute(LANDING_BACKUP_PATH)
+  ? LANDING_BACKUP_PATH
+  : path.join(__dirname, LANDING_BACKUP_PATH);
+
+function ensureDir(dirPath) {
+  if (!fs.existsSync(dirPath)) fs.mkdirSync(dirPath, { recursive: true });
+}
+
+function migrateDb(db) {
+  const migrationsDir = path.join(__dirname, "db", "migrations");
+  const files = fs
+    .readdirSync(migrationsDir)
+    .filter((f) => /^\d+_.*\.sql$/i.test(f))
+    .sort();
+
+  // Track applied migrations so ALTER TABLE migrations don't rerun every time.
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS SchemaMigration (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL UNIQUE,
+      appliedAt TEXT NOT NULL
+    );
+  `);
+
+  db.exec("BEGIN");
+  try {
+    for (const file of files) {
+      const already = db
+        .prepare("SELECT 1 FROM SchemaMigration WHERE name = ?")
+        .get(file);
+      if (already) continue;
+
+      const sql = fs.readFileSync(path.join(migrationsDir, file), "utf8");
+      db.exec(sql);
+
+      db.prepare(
+        "INSERT INTO SchemaMigration (name, appliedAt) VALUES (?, ?)"
+      ).run(file, new Date().toISOString());
+    }
+    db.exec("COMMIT");
+  } catch (e) {
+    db.exec("ROLLBACK");
+    throw e;
+  }
+}
+
+function openDb() {
+  ensureDir(path.dirname(resolvedDbPath));
+  const db = new Database(resolvedDbPath);
+  // WAL + NORMAL sync keeps demo writes snappy while staying safe enough for this use-case.
+  db.pragma("journal_mode = WAL");
+  db.pragma("synchronous = NORMAL");
+  db.pragma("foreign_keys = ON");
+  db.pragma("busy_timeout = 3000");
+  migrateDb(db);
+  return db;
+}
+
+const db = openDb();
+
+function isValidCallerNumber(raw) {
+  if (typeof raw !== "string") return false;
+  const s = raw.trim();
+  if (s.length < 7 || s.length > 20) return false;
+  return /^\+?\d+$/.test(s);
+}
+
+function normalizeCallerNumber(raw) {
+  return String(raw || "").trim();
+}
+
+function digitsOnly(s) {
+  return String(s || "").replace(/[^\d]/g, "");
+}
+
+function normalizeLeadPhone(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return "";
+  // Already E.164-ish
+  if (s.startsWith("+")) {
+    const digits = digitsOnly(s);
+    return digits ? `+${digits}` : "";
+  }
+  const digits = digitsOnly(s);
+  if (!digits) return "";
+  // US-friendly normalization (good enough for demo)
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  // Fallback: return raw digits; validator allows optional '+'
+  return digits;
+}
+
+function isSamePhoneNumber(a, b) {
+  const da = digitsOnly(a);
+  const db = digitsOnly(b);
+  if (!da || !db) return false;
+  // Compare last 10 digits (US-centric; good enough for our demo/testing)
+  const ta = da.length > 10 ? da.slice(-10) : da;
+  const tb = db.length > 10 ? db.slice(-10) : db;
+  return ta === tb;
+}
+
+function isValidStatus(s) {
+  return s === "missed" || s === "answered";
+}
+
+function clampStr(val, maxLen) {
+  const s = String(val ?? "").trim();
+  if (!s) return "";
+  const n = Number.isFinite(maxLen) ? Math.max(0, Math.floor(maxLen)) : 0;
+  if (!n) return s;
+  return s.length > n ? s.slice(0, n) : s;
+}
+
+function clientIp(req) {
+  // trust proxy is enabled, so x-forwarded-for is meaningful behind Render
+  const xf = req.headers["x-forwarded-for"];
+  if (typeof xf === "string" && xf.trim()) return xf.split(",")[0].trim();
+  return String(req.socket?.remoteAddress || "").trim();
+}
+
+// Super-lightweight in-memory throttle to reduce spam on the public form endpoint.
+// (Good enough for demo; in production you'd use a proper WAF / captcha / rate limiter.)
+const landingThrottle = new Map();
+function isRateLimited(ip, windowMs = 60_000, max = 15) {
+  const key = ip || "unknown";
+  const now = Date.now();
+  const entry = landingThrottle.get(key) || { ts: now, count: 0 };
+  if (now - entry.ts > windowMs) {
+    entry.ts = now;
+    entry.count = 0;
+  }
+  entry.count += 1;
+  landingThrottle.set(key, entry);
+  return entry.count > max;
+}
+
+function escapeXml(s) {
+  return String(s ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+function isValidCallSid(s) {
+  if (typeof s !== "string") return false;
+  const trimmed = s.trim();
+  // Twilio CallSid format: CAxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx (34 chars total)
+  return /^CA[a-f0-9]{32}$/i.test(trimmed);
+}
+
+function isLocalhostHost(hostname) {
+  const h = String(hostname || "").toLowerCase().trim();
+  return h === "localhost" || h === "127.0.0.1" || h === "::1";
+}
+
+function shouldBypassDemoKey(req) {
+  // Local/dev convenience: don't block the dashboard when DEMO_KEY isn't set.
+  // Keep production locked down (Render sets process.env.RENDER).
+  if (process.env.RENDER) return false;
+  const host = req?.hostname || req?.headers?.host || "";
+  return isLocalhostHost(host);
+}
+
+function isAuthed(req) {
+  if (!DEMO_KEY) return shouldBypassDemoKey(req);
+  const q = req.query?.key ? String(req.query.key) : "";
+  const h = req.headers["x-demo-key"] ? String(req.headers["x-demo-key"]) : "";
+  const cookie = req.headers.cookie || "";
+  const match = cookie.match(/(?:^|;\s*)demo_key=([^;]+)/);
+  const c = match ? decodeURIComponent(match[1]) : "";
+  return q === DEMO_KEY || h === DEMO_KEY || c === DEMO_KEY;
+}
+
+function requireDemoAuth(req, res, next) {
+  if (isAuthed(req)) return next();
+  return res.status(401).json({
+    error: "Unauthorized",
+    message:
+      "Demo access requires DEMO_KEY. Provide ?key=... or header x-demo-key.",
+  });
+}
+
+function guardedPage(req, res, fileName) {
+  if (!DEMO_KEY) {
+    if (shouldBypassDemoKey(req)) {
+      return res.sendFile(path.join(__dirname, fileName));
+    }
+    return res
+      .status(503)
+      .type("html")
+      .send(
+        `<html><head><meta charset="utf-8"><title>Demo disabled</title></head><body style="font-family:system-ui;padding:24px"><h2>Demo disabled</h2><p>Set <code>DEMO_KEY</code> in <code>hvac-demo-landing/.env</code> and restart the server.</p></body></html>`
+      );
+  }
+
+  if (isAuthed(req)) {
+    return res.sendFile(path.join(__dirname, fileName));
+  }
+
+  // Simple password prompt → stores in localStorage + cookie, then redirects with ?key=
+  const target = req.path;
+  const hadQueryKey = !!(req.query && typeof req.query.key !== "undefined");
+  return res
+    .status(401)
+    .type("html")
+    .send(`<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Demo Access</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar" role="banner">
+      <div class="container topbar__inner">
+        <div class="brand" aria-label="Local HVAC service demo">
+          <div class="brand__logo" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l2.2 6.1L21 9l-5 3.8 1.9 6.2L12 15.9 6.1 19l1.9-6.2L3 9l6.8-.9L12 2z" stroke="currentColor" stroke-width="1.6" />
+            </svg>
+          </div>
+          <div class="brand__text">
+            <div class="brand__name">Missed Call Visibility Demo</div>
+            <div class="brand__tag">Enter demo key to continue</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="form-card" style="max-width:520px;margin:0 auto;">
+          <div class="form-card__head">
+            <h2 class="form-card__title">Demo access</h2>
+            <p class="form-card__subtitle">This is protected to prevent spam.</p>
+          </div>
+          <form id="authForm" novalidate>
+            <div class="field field--full">
+              <label for="demoKey">Demo key</label>
+              <input id="demoKey" name="demoKey" placeholder="Enter demo key..." autocomplete="off" />
+              <p class="error" id="authError" aria-live="polite"></p>
+            </div>
+            <button class="btn btn--primary btn--block" type="submit">Continue</button>
+            <p class="form-footnote muted" style="margin-top:10px;">
+              Tip: the key is stored locally on this device.
+            </p>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      (function(){
+        const targetPath = ${JSON.stringify(target)};
+        const hadQueryKey = ${JSON.stringify(hadQueryKey)};
+        const params = new URLSearchParams(window.location.search);
+
+        // Escape hatch: /dashboard?reset=1 clears any saved key/cookie so you can re-enter cleanly.
+        if (params.get("reset") === "1") {
+          try { localStorage.removeItem("hvac_demo_key"); } catch {}
+          try { document.cookie = "demo_key=; Max-Age=0; path=/; SameSite=Lax"; } catch {}
+          params.delete("reset");
+          params.delete("key");
+          const clean = new URL(window.location.href);
+          clean.search = params.toString() ? ("?" + params.toString()) : "";
+          window.history.replaceState({}, "", clean.toString());
+        }
+
+        const fromUrl = (params.get("key") || "").trim();
+        const fromStore = (localStorage.getItem("hvac_demo_key") || "").trim();
+        const existing = fromUrl || fromStore || "";
+
+        // IMPORTANT: if a key was already tried via ?key=, do NOT auto-redirect again (prevents loops).
+        // We'll show the form and let the user enter a correct key.
+        if (existing && !hadQueryKey) {
+          const url = new URL(window.location.href);
+          url.pathname = targetPath;
+          url.searchParams.set("key", existing);
+          window.location.replace(url.toString());
+          return;
+        }
+
+        const form = document.getElementById("authForm");
+        const input = document.getElementById("demoKey");
+        const err = document.getElementById("authError");
+        if (existing) input.value = existing;
+        input.focus();
+
+        if (hadQueryKey) {
+          err.textContent = "That demo key didn't work. Please try again.";
+        }
+
+        form.addEventListener("submit", function(e){
+          e.preventDefault();
+          const key = (input.value || "").trim();
+          if (!key) {
+            err.textContent = "Please enter the demo key.";
+            return;
+          }
+          localStorage.setItem("hvac_demo_key", key);
+          document.cookie = "demo_key=" + encodeURIComponent(key) + "; path=/; SameSite=Lax";
+          const url = new URL(window.location.href);
+          url.pathname = targetPath;
+          url.searchParams.set("key", key);
+          url.searchParams.delete("reset");
+          window.location.replace(url.toString());
+        });
+      })();
+    </script>
+  </body>
+</html>`);
+}
+
+function rowToJson(row) {
+  if (!row) return null;
+  let responseSeconds = null;
+  try {
+    if (row.followedUpAt) {
+      const created = new Date(row.createdAt).getTime();
+      const followed = new Date(row.followedUpAt).getTime();
+      if (Number.isFinite(created) && Number.isFinite(followed)) {
+        responseSeconds = Math.max(0, Math.floor((followed - created) / 1000));
+      }
+    }
+  } catch {
+    responseSeconds = null;
+  }
+  return {
+    id: row.id,
+    createdAt: row.createdAt,
+    callerNumber: row.callerNumber,
+    status: row.status,
+    source: row.source,
+    followedUp: !!row.followedUp,
+    followedUpAt: row.followedUpAt,
+    note: row.note,
+    outcome: row.outcome ?? null,
+    outcomeAt: row.outcomeAt ?? null,
+    callSid: row.callSid ?? null,
+    toNumber: row.toNumber ?? null,
+    twilioStatus: row.twilioStatus ?? null,
+    direction: row.direction ?? null,
+    callDurationSec:
+      typeof row.callDurationSec === "number" ? row.callDurationSec : row.callDurationSec ?? null,
+    dialCallDurationSec:
+      typeof row.dialCallDurationSec === "number"
+        ? row.dialCallDurationSec
+        : row.dialCallDurationSec ?? null,
+    responseSeconds,
+  };
+}
+
+const app = express();
+// Behind Render (or any proxy), this enables correct req.protocol from X-Forwarded-Proto.
+app.set("trust proxy", 1);
+app.use(express.json({ limit: "200kb" }));
+// Twilio webhooks POST x-www-form-urlencoded
+app.use(express.urlencoded({ extended: false }));
+app.use(express.static(__dirname));
+
+// Pages
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "index.html")));
+app.get("/demo", (req, res) => guardedPage(req, res, "demo.html"));
+app.get("/dashboard", (req, res) => guardedPage(req, res, "dashboard.html"));
+
+// Health check (safe to expose publicly; no secrets)
+app.get("/_health", (req, res) => {
+  const fileInfo = (p) => {
+    try {
+      const st = fs.statSync(p);
+      return {
+        exists: true,
+        sizeBytes: typeof st.size === "number" ? st.size : null,
+        mtimeMs: typeof st.mtimeMs === "number" ? st.mtimeMs : null,
+      };
+    } catch {
+      return { exists: false, sizeBytes: null, mtimeMs: null };
+    }
+  };
+
+  const storageWarnings = [];
+  const looksLikeRenderDisk = resolvedDbPath.startsWith("/var/data/");
+  if (process.env.RENDER && !looksLikeRenderDisk) {
+    storageWarnings.push(
+      "Render detected but DATABASE_PATH is not under /var/data. Add a Render Disk mounted at /var/data and set DATABASE_PATH=/var/data/calls.sqlite to persist across deploys."
+    );
+  }
+
+  return res.json({
+    ok: true,
+    service: "hvac-demo-landing",
+    node: process.version,
+    hasDemoKey: !!DEMO_KEY,
+    storage: {
+      databasePath: resolvedDbPath,
+      database: fileInfo(resolvedDbPath),
+      landingBackupPath: resolvedLandingBackupPath,
+      landingBackup: fileInfo(resolvedLandingBackupPath),
+      warnings: storageWarnings,
+    },
+    twilio: {
+      validateSignature: !!TWILIO_VALIDATE_SIGNATURE,
+      hasAuthToken: !!TWILIO_AUTH_TOKEN,
+      hasAccountSid: !!TWILIO_ACCOUNT_SID,
+      hasNumber: !!TWILIO_NUMBER,
+      forwardEnabled: !!TWILIO_FORWARD_TO,
+    },
+  });
+});
+
+function computeTwilioSignature(url, params, authToken) {
+  const body = params && typeof params === "object" ? params : {};
+  const keys = Object.keys(body).sort();
+  let data = String(url || "");
+  for (const k of keys) {
+    const v = body[k];
+    // Twilio treats multi-value params as repeated keys; our usage is simple (single values).
+    data += k + (Array.isArray(v) ? v.join("") : String(v ?? ""));
+  }
+  return crypto.createHmac("sha1", authToken).update(data, "utf8").digest("base64");
+}
+
+function timingSafeEqualStr(a, b) {
+  try {
+    const ba = Buffer.from(String(a || ""), "utf8");
+    const bb = Buffer.from(String(b || ""), "utf8");
+    if (ba.length !== bb.length) return false;
+    return crypto.timingSafeEqual(ba, bb);
+  } catch {
+    return false;
+  }
+}
+
+function validateTwilioRequest(req) {
+  // If auth token is not set, we can't validate. Allow but log a warning.
+  if (!TWILIO_VALIDATE_SIGNATURE) return true;
+  if (!TWILIO_AUTH_TOKEN) return true;
+  const sig = req.headers["x-twilio-signature"]
+    ? String(req.headers["x-twilio-signature"])
+    : "";
+  if (!sig) return false;
+  const url = `${req.protocol}://${req.get("host")}${req.originalUrl}`;
+  const expected = computeTwilioSignature(url, req.body, TWILIO_AUTH_TOKEN);
+  return timingSafeEqualStr(sig, expected);
+}
+
+function requireTwilioAuth(req, res, next) {
+  if (!TWILIO_VALIDATE_SIGNATURE) return next();
+  if (!TWILIO_AUTH_TOKEN) {
+    if (!requireTwilioAuth._warned) {
+      // eslint-disable-next-line no-console
+      console.log("⚠️  TWILIO_AUTH_TOKEN not set; skipping Twilio signature verification.");
+      requireTwilioAuth._warned = true;
+    }
+    return next();
+  }
+  if (validateTwilioRequest(req)) return next();
+  return res.status(403).type("text/plain").send("Forbidden");
+}
+
+function normalizeTwilioCallStatus({
+  callStatus,
+  dialCallStatus,
+  hasForwarding,
+  callDurationSec,
+  dialCallDurationSec,
+}) {
+  const cs = String(callStatus || "").toLowerCase().trim();
+  const dcs = String(dialCallStatus || "").toLowerCase().trim();
+
+  // If we are NOT forwarding, Twilio "completed" just means it finished our TwiML.
+  // That does NOT indicate a real human answered, so treat as missed/unhandled.
+  if (!hasForwarding) return "missed";
+
+  // Most reliable: if Twilio reports a connected leg duration, it was answered.
+  // When forwarding via <Dial>, DialCallDuration represents the forwarded leg.
+  if (typeof dialCallDurationSec === "number" && dialCallDurationSec > 0) return "answered";
+  // For completeness, if Twilio reports overall call duration > 0, treat as answered.
+  // (This helps when DialCallStatus/DialCallDuration aren't present in a callback.)
+  if (typeof callDurationSec === "number" && callDurationSec > 0) return "answered";
+
+  // When forwarding via <Dial>, trust DialCallStatus if present.
+  // Twilio DialCallStatus values: completed | busy | no-answer | failed | canceled
+  if (dcs) {
+    if (dcs === "completed") return "answered";
+    return "missed";
+  }
+
+  // Fallback: interpret call status.
+  // "in-progress" implies connected; treat as answered. "completed" is ambiguous; treat as missed.
+  if (cs === "in-progress") return "answered";
+  return "missed";
+}
+
+function upsertTwilioEvent({
+  callSid,
+  from,
+  to,
+  callStatus,
+  dialCallStatus,
+  direction,
+  callDurationSec,
+  dialCallDurationSec,
+}) {
+  const now = new Date().toISOString();
+  const callerNumber = normalizeCallerNumber(from);
+  const status = normalizeTwilioCallStatus({
+    callStatus,
+    dialCallStatus,
+    hasForwarding: !!TWILIO_FORWARD_TO,
+    callDurationSec,
+    dialCallDurationSec,
+  });
+  const twilioStatus = String(dialCallStatus || callStatus || "").trim();
+
+  if (callSid && isValidCallSid(callSid)) {
+    const existing = db
+      .prepare("SELECT * FROM CallEvent WHERE callSid = ?")
+      .get(callSid);
+
+    if (existing) {
+      db.prepare(
+        "UPDATE CallEvent SET callerNumber = COALESCE(?, callerNumber), status = ?, source = 'twilio', toNumber = COALESCE(?, toNumber), twilioStatus = COALESCE(?, twilioStatus), direction = COALESCE(?, direction), callDurationSec = COALESCE(?, callDurationSec), dialCallDurationSec = COALESCE(?, dialCallDurationSec) WHERE callSid = ?"
+      ).run(
+        callerNumber || null,
+        status,
+        to || null,
+        twilioStatus || null,
+        direction || null,
+        callDurationSec ?? null,
+        dialCallDurationSec ?? null,
+        callSid
+      );
+      return;
+    }
+
+    db.prepare(
+      "INSERT INTO CallEvent (createdAt, callerNumber, status, source, followedUp, callSid, toNumber, twilioStatus, direction, callDurationSec, dialCallDurationSec) VALUES (?, ?, ?, 'twilio', 0, ?, ?, ?, ?, ?, ?)"
+    ).run(
+      now,
+      callerNumber || "+10000000000",
+      status,
+      callSid,
+      to || null,
+      twilioStatus || null,
+      direction || null,
+      callDurationSec ?? null,
+      dialCallDurationSec ?? null
+    );
+    return;
+  }
+
+  // Fallback if CallSid missing/invalid: insert as a best-effort event.
+  db.prepare(
+    "INSERT INTO CallEvent (createdAt, callerNumber, status, source, followedUp, toNumber, twilioStatus, direction, callDurationSec, dialCallDurationSec) VALUES (?, ?, ?, 'twilio', 0, ?, ?, ?, ?, ?)"
+  ).run(
+    now,
+    callerNumber || "+10000000000",
+    status,
+    to || null,
+    twilioStatus || null,
+    direction || null,
+    callDurationSec ?? null,
+    dialCallDurationSec ?? null
+  );
+}
+
+function twiml(xmlInner) {
+  return `<?xml version="1.0" encoding="UTF-8"?><Response>${xmlInner || ""}</Response>`;
+}
+
+function parseTwilioSeconds(val) {
+  if (val === null || typeof val === "undefined") return null;
+  const n = Number(String(val).trim());
+  if (!Number.isFinite(n)) return null;
+  const i = Math.floor(n);
+  if (i < 0) return null;
+  return i;
+}
+
+// Twilio: outbound test TwiML (for one-phone testing via Twilio API)
+app.post("/twilio/outbound", requireTwilioAuth, (req, res) => {
+  return res
+    .type("text/xml")
+    .send(
+      twiml(
+        "<Say>Thanks for calling. Please hold while we connect you.</Say><Pause length=\"10\"/><Hangup/>"
+      )
+    );
+});
+
+function canUseTwilioApi() {
+  return !!(TWILIO_ACCOUNT_SID && TWILIO_AUTH_TOKEN && TWILIO_NUMBER);
+}
+
+async function createTwilioTestCall({ toNumber, statusCallbackUrl, twimlUrl }) {
+  const auth = Buffer.from(`${TWILIO_ACCOUNT_SID}:${TWILIO_AUTH_TOKEN}`).toString("base64");
+  const body = new URLSearchParams();
+  body.set("From", TWILIO_NUMBER);
+  body.set("To", toNumber);
+  body.set("Url", twimlUrl);
+  body.set("Method", "POST");
+  body.set("StatusCallback", statusCallbackUrl);
+  body.set("StatusCallbackMethod", "POST");
+  body.set("StatusCallbackEvent", "initiated ringing answered completed");
+
+  const resp = await fetch(
+    `https://api.twilio.com/2010-04-01/Accounts/${encodeURIComponent(TWILIO_ACCOUNT_SID)}/Calls.json`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${auth}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: body.toString(),
+    }
+  );
+
+  const text = await resp.text();
+  let json;
+  try {
+    json = JSON.parse(text);
+  } catch {
+    json = { message: text };
+  }
+  if (!resp.ok) {
+    const msg = json?.message || json?.error_message || `Twilio API error (${resp.status})`;
+    const e = new Error(msg);
+    e.status = resp.status;
+    e.details = json;
+    throw e;
+  }
+  return json;
+}
+
+// One-phone testing: trigger Twilio to call your phone from the Twilio number.
+// This simulates a "customer call event pipeline" without needing a second device.
+app.post("/api/twilio/test-call", requireDemoAuth, async (req, res) => {
+  if (!canUseTwilioApi()) {
+    return res.status(400).json({
+      error: "Twilio test-call not configured",
+      message:
+        "Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, and TWILIO_NUMBER to use /api/twilio/test-call.",
+    });
+  }
+
+  const toNumber = req.body?.to ? String(req.body.to).trim() : "";
+  if (!isValidCallerNumber(toNumber)) {
+    return res.status(400).json({
+      error: "Invalid to",
+      message: "Body must include { to: '+1XXXXXXXXXX' } (digits and optional leading +).",
+    });
+  }
+
+  const base = `${req.protocol}://${req.get("host")}`;
+  const statusCb = `${base}/twilio/status`;
+  const twimlUrl = `${base}/twilio/outbound`;
+
+  try {
+    const result = await createTwilioTestCall({
+      toNumber,
+      statusCallbackUrl: statusCb,
+      twimlUrl,
+    });
+    return res.json({
+      ok: true,
+      callSid: result?.sid || null,
+      status: result?.status || null,
+      to: result?.to || null,
+      from: result?.from || null,
+    });
+  } catch (e) {
+    return res.status(500).json({
+      error: "Failed to create test call",
+      message: e?.message || "Unknown error",
+    });
+  }
+});
+
+// Twilio: voice webhook (A call comes in)
+app.post("/twilio/voice", requireTwilioAuth, (req, res) => {
+  const callSid = req.body?.CallSid ? String(req.body.CallSid).trim() : "";
+  const from = req.body?.From ? String(req.body.From).trim() : "";
+  const to = req.body?.To ? String(req.body.To).trim() : "";
+  const callStatus = req.body?.CallStatus ? String(req.body.CallStatus).trim() : "";
+  const direction = req.body?.Direction ? String(req.body.Direction).trim() : "";
+
+  try {
+    // Initial voice webhook doesn't tell us if a human answered a forwarded call yet.
+    // We'll refine on /twilio/status if forwarding is enabled.
+    upsertTwilioEvent({
+      callSid,
+      from,
+      to,
+      callStatus,
+      dialCallStatus: "",
+      direction,
+      callDurationSec: parseTwilioSeconds(req.body?.CallDuration),
+      dialCallDurationSec: parseTwilioSeconds(req.body?.DialCallDuration),
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("Twilio voice webhook DB write failed:", e);
+  }
+
+  // If you want a “real” demo: forward the call to a real phone number.
+  if (TWILIO_FORWARD_TO) {
+    // Avoid the confusing test case where you call the Twilio number from the same phone you're forwarding to.
+    // In that scenario the forward leg usually goes to voicemail and you hear a PIN prompt.
+    if (isSamePhoneNumber(from, TWILIO_FORWARD_TO)) {
+      return res
+        .type("text/xml")
+        .send(
+          twiml(
+            "<Say>Please call from a different phone to test forwarding. Goodbye.</Say><Hangup/>"
+          )
+        );
+    }
+
+    // Provide a status callback so we can update answered/missed based on final status.
+    const statusCb = `${req.protocol}://${req.get("host")}/twilio/status`;
+    return res
+      .type("text/xml")
+      .send(
+        twiml(
+          `<Dial answerOnBridge="true" timeout="20" action="${escapeXml(
+            statusCb
+          )}" method="POST" statusCallback="${escapeXml(
+            statusCb
+          )}" statusCallbackMethod="POST" statusCallbackEvent="initiated ringing answered completed">${escapeXml(
+            TWILIO_FORWARD_TO
+          )}</Dial>`
+        )
+      );
+  }
+
+  // Default: speak a short message and hang up (useful when testing without forwarding).
+  return res
+    .type("text/xml")
+    .send(twiml("<Say>Thanks for calling. Goodbye.</Say><Hangup/>"));
+});
+
+// Twilio: call status callback (Call status changes)
+app.post("/twilio/status", requireTwilioAuth, (req, res) => {
+  const callSid = req.body?.CallSid ? String(req.body.CallSid).trim() : "";
+  const from = req.body?.From ? String(req.body.From).trim() : "";
+  const to = req.body?.To ? String(req.body.To).trim() : "";
+  const callStatus = req.body?.CallStatus ? String(req.body.CallStatus).trim() : "";
+  const dialCallStatus = req.body?.DialCallStatus
+    ? String(req.body.DialCallStatus).trim()
+    : "";
+  const direction = req.body?.Direction ? String(req.body.Direction).trim() : "";
+
+  try {
+    upsertTwilioEvent({
+      callSid,
+      from,
+      to,
+      callStatus,
+      dialCallStatus,
+      direction,
+      callDurationSec: parseTwilioSeconds(req.body?.CallDuration),
+      dialCallDurationSec: parseTwilioSeconds(req.body?.DialCallDuration),
+    });
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("Twilio status webhook DB write failed:", e);
+  }
+  return res.status(204).end();
+});
+
+// API: create event (webhook simulator)
+app.post("/api/webhooks/call", requireDemoAuth, (req, res) => {
+  const callerNumber = normalizeCallerNumber(req.body?.callerNumber);
+  const status = req.body?.status;
+  const source = req.body?.source ? String(req.body.source) : "simulator";
+
+  if (!isValidCallerNumber(callerNumber)) {
+    return res.status(400).json({
+      error: "Invalid callerNumber",
+      message:
+        "callerNumber is required, length 7-20, and must contain only '+' and digits.",
+    });
+  }
+  if (!isValidStatus(status)) {
+    return res.status(400).json({
+      error: "Invalid status",
+      message: "status must be 'missed' or 'answered'.",
+    });
+  }
+
+  const createdAt = new Date().toISOString();
+  const insert = db
+    .prepare(
+      "INSERT INTO CallEvent (createdAt, callerNumber, status, source, followedUp) VALUES (?, ?, ?, ?, 0)"
+    )
+    .run(createdAt, callerNumber, status, source);
+
+  const row = db
+    .prepare("SELECT * FROM CallEvent WHERE id = ?")
+    .get(insert.lastInsertRowid);
+
+  return res.json(rowToJson(row));
+});
+
+// Landing: store form submissions so they appear on the dashboard.
+// This is not Twilio; it's "someone filled the form instead of calling".
+app.post("/api/landing/form", (req, res) => {
+  const ip = clientIp(req);
+  if (isRateLimited(ip)) return res.status(429).json({ error: "Too many requests" });
+
+  // Honeypot: bots often fill a "website" field. If present, silently drop.
+  const honeypot = String(req.body?.website ?? "").trim();
+  if (honeypot) return res.status(204).end();
+
+  const phoneRaw = normalizeLeadPhone(req.body?.phone);
+  if (!isValidCallerNumber(phoneRaw)) {
+    return res.status(400).json({
+      error: "Invalid phone",
+      message:
+        "phone is required. Accepts formats like (443) 555-1234 or +14435551234. Must be 7-20 digits after normalization.",
+    });
+  }
+
+  const createdAt = new Date().toISOString();
+  const firstName = clampStr(req.body?.firstName, 60);
+  const cityOrZip = clampStr(req.body?.cityOrZip, 80);
+  const issue = clampStr(req.body?.issue, 80);
+  const timeframe = clampStr(req.body?.timeframe, 80);
+
+  const noteParts = [];
+  if (firstName) noteParts.push(`First: ${firstName}`);
+  if (cityOrZip) noteParts.push(`City/ZIP: ${cityOrZip}`);
+  if (issue) noteParts.push(`Issue: ${issue}`);
+  if (timeframe) noteParts.push(`Timeframe: ${timeframe}`);
+  const note = clampStr(noteParts.join(" • "), 500);
+
+  // Persist full submission (on-disk DB + append-only file backup).
+  const userAgent = clampStr(req.headers["user-agent"], 300);
+  const rawPayload =
+    req.body && typeof req.body === "object" && !Array.isArray(req.body) ? req.body : {};
+  const payloadJson = JSON.stringify(rawPayload);
+
+  // Best-effort append-only backup; if it fails, still save to SQLite.
+  try {
+    ensureDir(path.dirname(resolvedLandingBackupPath));
+    const fd = fs.openSync(resolvedLandingBackupPath, "a");
+    try {
+      const line =
+        JSON.stringify({
+          createdAt,
+          phone: phoneRaw,
+          firstName,
+          cityOrZip,
+          issue,
+          timeframe,
+          ip,
+          userAgent,
+          payload: rawPayload,
+        }) + "\n";
+      fs.writeSync(fd, line, null, "utf8");
+      fs.fsyncSync(fd);
+    } finally {
+      fs.closeSync(fd);
+    }
+  } catch (e) {
+    // eslint-disable-next-line no-console
+    console.warn("Landing submission backup write failed:", e?.message || e);
+  }
+
+  const tx = db.transaction(() => {
+    const insertEvent = db
+      .prepare(
+        "INSERT INTO CallEvent (createdAt, callerNumber, status, source, followedUp, note) VALUES (?, ?, 'missed', 'landing_form', 0, ?)"
+      )
+      .run(createdAt, phoneRaw, note || null);
+
+    const callEventId = Number(insertEvent.lastInsertRowid);
+
+    db.prepare(
+      "INSERT INTO LandingSubmission (createdAt, callEventId, phone, firstName, cityOrZip, issue, timeframe, ip, userAgent, payloadJson) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    ).run(
+      createdAt,
+      Number.isFinite(callEventId) ? callEventId : null,
+      phoneRaw,
+      firstName || null,
+      cityOrZip || null,
+      issue || null,
+      timeframe || null,
+      ip || null,
+      userAgent || null,
+      payloadJson
+    );
+
+    const row = db.prepare("SELECT * FROM CallEvent WHERE id = ?").get(callEventId);
+    return row;
+  });
+
+  const row = tx();
+  return res.json(rowToJson(row));
+});
+
+// API: list recent calls
+app.get("/api/calls", requireDemoAuth, (req, res) => {
+  const rawLimit = req.query?.limit ? Number(req.query.limit) : 50;
+  const limit = Number.isFinite(rawLimit)
+    ? Math.max(1, Math.min(200, Math.floor(rawLimit)))
+    : 50;
+
+  const rows = db
+    .prepare("SELECT * FROM CallEvent ORDER BY createdAt DESC LIMIT ?")
+    .all(limit);
+
+  return res.json(rows.map(rowToJson));
+});
+
+function normalizeOutcome(raw) {
+  if (raw === null) return null;
+  if (typeof raw === "undefined") return undefined;
+  return String(raw).trim();
+}
+
+function isValidOutcome(o) {
+  return (
+    o === "booked" ||
+    o === "reached_no_booking" ||
+    o === "no_answer" ||
+    o === "already_hired" ||
+    o === "wrong_number" ||
+    o === "call_back_later"
+  );
+}
+
+// API: follow-up
+app.post("/api/calls/:id/follow-up", requireDemoAuth, (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+
+  const now = new Date().toISOString();
+  const result = db
+    .prepare(
+      "UPDATE CallEvent SET followedUp = 1, followedUpAt = COALESCE(followedUpAt, ?) WHERE id = ?"
+    )
+    .run(now, id);
+
+  if (result.changes === 0) {
+    return res.status(404).json({ error: "Not found" });
+  }
+
+  const row = db.prepare("SELECT * FROM CallEvent WHERE id = ?").get(id);
+  return res.json(rowToJson(row));
+});
+
+// API: set/clear outcome
+app.post("/api/calls/:id/outcome", requireDemoAuth, (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+
+  const outcome = normalizeOutcome(req.body?.outcome);
+  if (typeof outcome === "undefined") {
+    return res.status(400).json({
+      error: "Invalid outcome",
+      message: "Body must include { outcome: <allowed string> | null }",
+    });
+  }
+
+  if (outcome !== null && !isValidOutcome(outcome)) {
+    return res.status(400).json({
+      error: "Invalid outcome",
+      message:
+        "outcome must be one of: booked, reached_no_booking, no_answer, already_hired, wrong_number, call_back_later, or null.",
+    });
+  }
+
+  if (outcome === null) {
+    const result = db
+      .prepare("UPDATE CallEvent SET outcome = NULL, outcomeAt = NULL WHERE id = ?")
+      .run(id);
+    if (result.changes === 0) return res.status(404).json({ error: "Not found" });
+  } else {
+    const now = new Date().toISOString();
+    const result = db
+      .prepare("UPDATE CallEvent SET outcome = ?, outcomeAt = ? WHERE id = ?")
+      .run(outcome, now, id);
+    if (result.changes === 0) return res.status(404).json({ error: "Not found" });
+  }
+
+  const row = db.prepare("SELECT * FROM CallEvent WHERE id = ?").get(id);
+  return res.json(rowToJson(row));
+});
+
+// API: delete single call event
+app.delete("/api/calls/:id", requireDemoAuth, (req, res) => {
+  const id = Number(req.params.id);
+  if (!Number.isFinite(id)) {
+    return res.status(400).json({ error: "Invalid id" });
+  }
+
+  const result = db.prepare("DELETE FROM CallEvent WHERE id = ?").run(id);
+  if (result.changes === 0) return res.status(404).json({ error: "Not found" });
+  return res.json({ ok: true });
+});
+
+// API: clear all call events (demo cleanup)
+app.post("/api/calls/clear", requireDemoAuth, (req, res) => {
+  db.exec("DELETE FROM CallEvent");
+  return res.json({ ok: true });
+});
+
+app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
+  console.log(`✅ HVAC demo server running: http://127.0.0.1:${PORT}`);
+  if (!DEMO_KEY) {
+    // eslint-disable-next-line no-console
+    console.log(
+      "ℹ️  DEMO_KEY is not set. Localhost access is allowed, but public access is disabled until you set DEMO_KEY."
+    );
+  }
+  if (!TWILIO_AUTH_TOKEN && TWILIO_VALIDATE_SIGNATURE) {
+    // eslint-disable-next-line no-console
+    console.log(
+      "⚠️  TWILIO_AUTH_TOKEN is not set. /twilio/* webhooks will NOT be signature-verified."
+    );
+  }
+});
+
+

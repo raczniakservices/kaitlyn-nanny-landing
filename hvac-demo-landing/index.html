@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b5fff" />
+    <title>HVAC Service</title>
+    <meta
+      name="description"
+      content="Licensed HVAC service for repairs, maintenance, and emergency calls. Call now or request service in under a minute."
+    />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="HVAC Service" />
+    <meta property="og:description" content="Licensed HVAC service for repairs, maintenance, and emergency calls. Call now or request service in under a minute." />
+    <meta property="og:image" content="./assets/hvac-hero.svg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="HVAC Service" />
+    <meta property="twitter:description" content="Licensed HVAC service for repairs, maintenance, and emergency calls. Call now or request service in under a minute." />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E❄️%3C/text%3E%3C/svg%3E" />
+    
+    <!-- Preconnect to improve performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Modern font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet" />
+    
+    <!-- Animation library - AOS (Animate On Scroll) -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="./styles.css" />
+
+    <!-- LocalBusiness schema is injected from site.config.js -->
+  </head>
+
+  <body class="landing-page">
+    <header class="topbar" role="banner">
+      <div class="topbar__inner">
+        <a class="brand" href="#request" data-scroll="request" aria-label="Confirm availability">
+          <span class="brand__logo" aria-hidden="true">
+            <img class="brand__mark" src="assets/brand/blue-ridge-logo.png" alt="Blue Ridge Heating &amp; Air" />
+          </span>
+          <span class="brand__name" data-bind="companyName">Blue Ridge Heating &amp; Air</span>
+        </a>
+
+        <a class="call-cta phone-link" data-bind-tel="phoneTel" href="tel:+10000000000" aria-label="Call">
+          <span class="call-cta__icon phone-link__icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.9 19.9 0 0 1 3 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7c.1.9.3 1.7.5 2.5a2 2 0 0 1-.5 2.1L9.1 10.9a16 16 0 0 0 4 4l1.6-1.1a2 2 0 0 1 2.1-.5c.8.2 1.6.4 2.5.5a2 2 0 0 1 1.7 2.1z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="call-cta__number phone-link__text" data-bind="phoneDisplay">(000) 000-0000</span>
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero" aria-label="HVAC service hero">
+        <div class="container hero__grid">
+          <div class="hero__copy">
+            <h1 class="hero__h1" data-aos="fade-up" data-aos-delay="200">HVAC Service Today. <span class="text-primary">Confirm Availability</span> in Under 60 Seconds.</h1>
+            <p class="hero__subhead" data-aos="fade-up" data-aos-delay="280">
+              Fast dispatch, clear options, and priority callback for after-hours requests.
+            </p>
+
+            <div class="trust-strip" aria-label="Trust signals" data-aos="fade-up" data-aos-delay="600" id="trustStrip">
+              <!-- populated from config -->
+            </div>
+
+            <div class="hero__cta" data-aos="fade-up" data-aos-delay="700">
+              <a class="btn btn--primary btn--lg" href="#request" data-scroll="request">
+                Confirm Availability
+              </a>
+              <a class="btn btn--secondary btn--lg btn--call" data-bind-tel="phoneTel" href="tel:+10000000000" aria-label="Call">
+                Call Now
+                <span class="btn__number" data-bind="phoneDisplay">(000) 000-0000</span>
+              </a>
+            </div>
+            <p class="hero__micro" data-aos="fade-up" data-aos-delay="720">
+              Calls and requests are logged instantly so nothing gets missed.
+            </p>
+            <p class="hero__hours" data-aos="fade-up" data-aos-delay="740">
+              Hours: <span data-bind="hours">Mon–Sun 8am–8pm</span>. After-hours requests receive priority callback when we open.
+            </p>
+          </div>
+
+          <aside class="hero__form" aria-label="Request service form" data-aos="fade-left" data-aos-delay="500">
+            <div class="form-card" id="request">
+              <div class="form-card__head">
+                <h2 class="form-card__title">Confirm Availability</h2>
+                <p class="form-card__subtitle">A few details so we can confirm options and next steps.</p>
+              </div>
+
+              <form id="serviceForm" novalidate>
+                <div class="form-grid">
+                  <div class="field">
+                    <label for="firstName">Name</label>
+                    <input id="firstName" name="firstName" autocomplete="name" inputmode="text" placeholder="Cody" />
+                    <p class="error" data-error-for="firstName" aria-live="polite"></p>
+                  </div>
+
+                  <div class="field">
+                    <label for="phone">Phone number</label>
+                    <input
+                      id="phone"
+                      name="phone"
+                      autocomplete="tel"
+                      inputmode="tel"
+                      placeholder="(443) 555-0132"
+                      required
+                    />
+                    <p class="help">We only use this to confirm availability and next steps.</p>
+                    <p class="error" data-error-for="phone" aria-live="polite"></p>
+                  </div>
+
+                  <div class="field">
+                    <label for="cityOrZip">ZIP code</label>
+                    <input id="cityOrZip" name="cityOrZip" autocomplete="postal-code" inputmode="numeric" placeholder="21224" required />
+                    <p class="error" data-error-for="cityOrZip" aria-live="polite"></p>
+                  </div>
+
+                  <div class="field">
+                    <label for="issue">What do you need help with?</label>
+                    <select id="issue" name="issue" required>
+                      <option value="">Select one…</option>
+                      <option>No heat</option>
+                      <option>No AC</option>
+                      <option>System won’t turn on</option>
+                      <option>Strange noise / burning smell</option>
+                      <option>Water leak</option>
+                      <option>Weak airflow / uneven temps</option>
+                      <option>Maintenance / tune-up</option>
+                      <option>Thermostat issue</option>
+                      <option>Other</option>
+                    </select>
+                    <p class="error" data-error-for="issue" aria-live="polite"></p>
+                  </div>
+
+                  <div class="field field--full">
+                    <label for="timeframe">When do you need service?</label>
+                    <select id="timeframe" name="timeframe" required>
+                      <option value="">Select one…</option>
+                      <option>ASAP (next 2–4 hours)</option>
+                      <option>Today</option>
+                      <option>Tomorrow</option>
+                      <option>This week</option>
+                      <option>Weekend</option>
+                      <option>Flexible</option>
+                    </select>
+                    <p class="error" data-error-for="timeframe" aria-live="polite"></p>
+                  </div>
+                </div>
+
+                <button class="btn btn--primary btn--block" type="submit">Confirm Availability</button>
+                <div class="form-consent" id="consent">
+                  By submitting, you agree to receive calls or texts related to your request. Msg &amp; data rates may apply. Reply STOP to opt out.
+                  <a href="/privacy.html" class="consent-link">Privacy Policy</a>
+                </div>
+                <p class="form-privacy">No spam. We use this only to confirm availability and next steps.</p>
+                <p class="form-expectation">Typical callback: within 5 to 15 minutes during open hours.</p>
+
+                <p class="form-footnote">
+                  Prefer a faster response? Call:
+                  <a data-bind-tel="phoneTel" href="tel:+10000000000"><span data-bind="phoneDisplay">(000) 000-0000</span></a>
+                </p>
+
+                <div class="form-success" id="formSuccess" hidden>
+                  <div class="form-success__title">Thanks.</div>
+                  <div class="form-success__body">
+                    We’ll reach out shortly to confirm availability and next steps.
+                  </div>
+                </div>
+              </form>
+            </div>
+          </aside>
+
+        </div>
+      </section>
+
+      <section class="section section--services" id="services" aria-label="Services">
+        <div class="container">
+          <div class="section__head">
+            <h2 data-aos="fade-up">Services</h2>
+            <p class="muted" data-aos="fade-up" data-aos-delay="100">Repairs, maintenance, and emergency service for heating and cooling systems.</p>
+          </div>
+
+          <div class="cards cards--4" id="servicesGrid"></div>
+        </div>
+      </section>
+
+      <section class="section section--tight" aria-label="About">
+        <div class="container">
+          <div class="section__head">
+            <h2 data-aos="fade-up">About</h2>
+            <div class="about__grid">
+              <div class="about__copy">
+                <p class="muted" data-aos="fade-up" data-aos-delay="100" data-bind="about">
+                  Locally owned HVAC team. Licensed and insured. Clear options before any work begins.
+                </p>
+                <div class="why" data-aos="fade-up" data-aos-delay="160" aria-label="Why homeowners choose Blue Ridge">
+                  <div class="why__title">Why homeowners choose Blue Ridge</div>
+                  <ul class="why__list">
+                    <li>Clear options before work starts</li>
+                    <li>Clean, respectful technicians</li>
+                    <li>Fast communication start to finish</li>
+                    <li>Honest recommendations, no pressure</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="about__media about__media--minimal" data-aos="fade-up" data-aos-delay="180" aria-hidden="true">
+                <img class="about__seal" data-bind-src="satisfactionSealUrl" data-hide-empty="1" alt="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--testimonials" aria-label="Customer testimonials">
+        <div class="container">
+          <div class="section__head">
+            <h2 data-aos="fade-up">What Homeowners Say</h2>
+            <p class="muted" data-aos="fade-up" data-aos-delay="100">Recent feedback from local homeowners</p>
+          </div>
+
+          <div class="carousel" aria-label="Testimonials">
+            <button class="carousel__btn" type="button" data-carousel="prev" aria-label="Previous testimonial">
+              ‹
+            </button>
+            <div class="carousel__viewport" tabindex="0">
+              <div class="carousel__track" id="testimonialsTrack" aria-live="polite"></div>
+            </div>
+            <button class="carousel__btn" type="button" data-carousel="next" aria-label="Next testimonial">
+              ›
+            </button>
+          </div>
+          <div class="carousel__dots" id="testimonialsDots" aria-label="Testimonials pagination"></div>
+        </div>
+      </section>
+
+      <section class="section section--alt" aria-label="What happens next">
+        <div class="container">
+          <div class="section__head">
+            <h2>What happens next</h2>
+            <p class="muted">No guessing. No runaround. Just a clear path to confirm availability and next steps.</p>
+          </div>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step__num">1</div>
+              <div class="step__title">Call or request service</div>
+              <div class="step__body">Call for the fastest response, or send a request and we’ll confirm availability.</div>
+            </div>
+            <div class="step">
+              <div class="step__num">2</div>
+              <div class="step__title">Quick diagnosis and clear options</div>
+              <div class="step__body">We diagnose the issue and walk you through options before any work begins.</div>
+            </div>
+            <div class="step">
+              <div class="step__num">3</div>
+              <div class="step__title">Repair + documentation</div>
+              <div class="step__body">We complete the repair and document what was done and what to watch for next.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- (Removed old "How it works" section; merged into the section above to reduce repetition) -->
+
+      <section class="section section--areas" aria-label="Service areas">
+        <div class="container">
+          <div class="section__head">
+            <h2>Service Areas</h2>
+            <p class="muted">Serving Baltimore and nearby areas</p>
+          </div>
+          <div class="chips" role="list" id="serviceAreasChips"></div>
+          <p class="areas-help muted">Not sure if we cover your area? Call and ask.</p>
+        </div>
+      </section>
+
+      <section class="section section--faq" id="faq" aria-label="FAQ">
+        <div class="container">
+          <div class="section__head">
+            <h2>FAQ</h2>
+            <p class="muted">Quick answers to common HVAC questions.</p>
+          </div>
+
+          <div class="faq">
+            <details class="faq__item">
+              <summary>How does scheduling work?</summary>
+              <div class="faq__body">
+                Call or send a request and we’ll confirm the next available window by phone. For urgent issues, calling is the fastest.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>How fast can you come out?</summary>
+              <div class="faq__body">
+                It depends on the day’s schedule and the issue. Call now for fastest response, or request service and we’ll confirm the soonest slot.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>What does a diagnostic cost?</summary>
+              <div class="faq__body">
+                We’ll confirm the diagnostic details when we contact you. If you can share symptoms and model info, we can often give clearer expectations.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>Do you offer emergency HVAC repair?</summary>
+              <div class="faq__body">
+                Yes. Call the number on this page for the fastest response. If we miss you, leave a voicemail and we’ll follow up quickly.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>Do you give pricing over the phone?</summary>
+              <div class="faq__body">
+                We can share common ranges, but accurate pricing usually requires diagnosis. You’ll get clear options and upfront approval before work.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>What should I do if I smell gas or burning?</summary>
+              <div class="faq__body">
+                If you suspect a gas leak, leave the area and contact your gas utility or emergency services. For burning smells, shut off the system if safe and call.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>Do you service heat pumps?</summary>
+              <div class="faq__body">
+                Yes. We handle heat pump troubleshooting, repairs, maintenance, and replacement guidance.
+              </div>
+            </details>
+            <details class="faq__item">
+              <summary>How do I request service without calling?</summary>
+              <div class="faq__body">
+                Use the form on this page. It captures the minimum details we need to confirm availability and next steps.
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--final-cta cta-band" aria-label="Final call to action">
+        <div class="container cta-band__inner">
+          <div class="cta-band__copy">
+            <h2>Ready to confirm availability?</h2>
+            <p class="muted">Call now for fastest response, or send a request and we will follow up quickly.</p>
+          </div>
+          <div class="cta-band__actions">
+            <a class="btn btn--secondary btn--lg" data-bind-tel="phoneTel" href="tel:+10000000000">Call Now</a>
+            <a class="btn btn--primary btn--lg" href="#request" data-scroll="request">Confirm Availability</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer" aria-label="Footer">
+      <div class="container footer__grid">
+        <div class="footer__col">
+          <div class="footer__brand" data-bind="companyName">HVAC Service</div>
+          <div class="footer__line">
+            Phone: <a data-bind-tel="phoneTel" href="tel:+10000000000"><span data-bind="phoneDisplay">(000) 000-0000</span></a>
+          </div>
+          <div class="footer__line">Service area: <span data-bind="primaryCity">Your area</span></div>
+        </div>
+        <div class="footer__col">
+          <div class="footer__label">Hours</div>
+          <div class="footer__line" data-bind="hours">Mon–Sun: 8am–8pm</div>
+          <div class="footer__line muted" data-bind="emergencyLine">Emergency service available</div>
+          <div class="footer__line muted" data-bind="licenseNumber" data-hide-empty="1"></div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Sticky mobile action bar -->
+    <div class="mobile-bar" role="region" aria-label="Quick actions">
+      <a class="mobile-bar__btn mobile-bar__btn--call" data-bind-tel="phoneTel" href="tel:+10000000000">
+        Call Now
+      </a>
+      <button class="mobile-bar__btn mobile-bar__btn--form" type="button" data-scroll="request">
+        Confirm Availability
+      </button>
+    </div>
+
+    <!-- AOS Animation Library -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <!-- Google Analytics Placeholder (replace UA-XXXXX-Y with your tracking ID) -->
+    <script>
+      // Google Analytics Placeholder
+      // window.dataLayer = window.dataLayer || [];
+      // function gtag(){dataLayer.push(arguments);}
+      // gtag('js', new Date());
+      // gtag('config', 'UA-XXXXX-Y');
+    </script>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>
+
+

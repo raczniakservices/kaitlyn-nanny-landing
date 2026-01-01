@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0b5fff" />
+    <title>Opportunity Visibility Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+
+  <body class="dashboard-page">
+    <header class="topbar" role="banner">
+      <div class="container topbar__inner">
+        <div class="brand" aria-label="Local HVAC service demo">
+          <div class="brand__logo" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M12 2l2.2 6.1L21 9l-5 3.8 1.9 6.2L12 15.9 6.1 19l1.9-6.2L3 9l6.8-.9L12 2z"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+            </svg>
+          </div>
+          <div class="brand__text">
+            <div class="brand__name">Opportunity Visibility</div>
+            <div class="brand__tag">Dashboard (last 50)</div>
+          </div>
+        </div>
+        <div class="topbar__right dashboard-topbar__right">
+          <div class="muted dashboard-topbar__meta">
+            Updated: <span id="updatedAgo">—</span>
+          </div>
+          <button class="btn btn--secondary" id="exportBtn" type="button" title="Export the currently visible rows to CSV">
+            <span aria-hidden="true">⬇</span>
+            Export
+          </button>
+          <button class="btn btn--primary" id="refreshBtn" type="button">Refresh</button>
+          <button class="btn btn--secondary" id="clearAllBtn" type="button">Clear all</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="section">
+      <div class="container">
+        <div class="section__head">
+          <h2>Recent call events</h2>
+          <p class="muted">
+            New opportunities captured from calls and forms. Set a Result after follow-up.
+          </p>
+        </div>
+
+        <div class="summary-strip" aria-label="Summary metrics">
+          <div class="summary-item">
+            <div class="summary-label">Unhandled</div>
+            <div class="summary-value" id="sumMissed">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Followed up</div>
+            <div class="summary-value" id="sumFollowedUp">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Booked</div>
+            <div class="summary-value" id="sumBooked">—</div>
+          </div>
+          <div class="summary-item">
+            <div class="summary-label">Lost</div>
+            <div class="summary-value" id="sumLost">—</div>
+          </div>
+        </div>
+
+        <p class="micro-note muted">
+          Tip: “Inbound call” = phone call. “Form submit” = web request. First follow-up sets response time. Setting a Result closes the lead.
+        </p>
+
+        <div id="eventsRoot">
+        <div class="table-wrap">
+          <table class="table" aria-label="Call events">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Caller</th>
+                <th>Open</th>
+                <th class="center-th">SLA</th>
+                <th>Call length</th>
+                <th>Type</th>
+                <th>Follow-ups</th>
+                <th>Owner</th>
+                <th>Result</th>
+                <th class="actions-th">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="rows">
+              <tr>
+                <td colspan="9" class="muted">Loading…</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="dashboard-cards" id="cards" aria-label="Call events (mobile)" hidden></div>
+        </div>
+
+        <!-- Auto-refresh runs in the background; we don't show a footer note to keep this owner-friendly. -->
+
+      </div>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+    <!-- Follow-up modal -->
+    <div class="modal-overlay" id="followupOverlay" hidden>
+      <div class="modal" role="dialog" aria-modal="true" aria-label="Record follow-up">
+        <div class="modal__header">
+          <div class="modal__title">Record follow-up</div>
+          <button class="icon-btn" id="followupCloseBtn" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="modal__body">
+          <div class="field field--full">
+            <label for="followupType">Action</label>
+            <select id="followupType">
+              <option value="call_attempt">Call attempt</option>
+              <option value="voicemail_left">Voicemail left</option>
+              <option value="text_sent">Text sent</option>
+              <option value="spoke_to_customer">Spoke to customer</option>
+              <option value="note">Note (does not start timer)</option>
+            </select>
+          </div>
+          <div class="field field--full">
+            <label for="followupNote">Note (optional)</label>
+            <textarea id="followupNote" rows="3" placeholder="Short note…"></textarea>
+          </div>
+          <div class="modal__actions">
+            <button class="btn btn--secondary" id="followupCancelBtn" type="button">Cancel</button>
+            <button class="btn btn--primary" id="followupSaveBtn" type="button">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline modal -->
+    <div class="modal-overlay" id="timelineOverlay" hidden>
+      <div class="modal modal--wide" role="dialog" aria-modal="true" aria-label="Lead timeline">
+        <div class="modal__header">
+          <div class="modal__title" id="timelineTitle">Lead timeline</div>
+          <button class="icon-btn" id="timelineCloseBtn" type="button" aria-label="Close">✕</button>
+        </div>
+        <div class="modal__body">
+          <div class="timeline-grid">
+            <div class="timeline-col">
+              <div class="section-label">Evidence</div>
+              <div id="timelineItems" class="timeline"></div>
+            </div>
+            <div class="timeline-col">
+              <div class="section-label">Actions</div>
+              <div class="panel">
+                <div class="panel__row">
+                  <button class="btn btn--secondary btn--block" id="timelineAddFollowupBtn" type="button">Record follow-up</button>
+                </div>
+                <div class="panel__row">
+                  <div class="muted" style="font-size:12px; margin-bottom:6px;">Booking confirmation (optional)</div>
+                  <input class="input" id="apptDate" placeholder="Appointment date (optional)" />
+                  <input class="input" id="apptWindow" placeholder="Time window (optional)" style="margin-top:8px;" />
+                  <button class="btn btn--primary btn--block" id="sendBookingBtn" type="button" style="margin-top:10px;">
+                    Send booking confirmation email
+                  </button>
+                  <div class="muted" id="bookingStatus" style="margin-top:8px; font-size:12px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./dashboard.js?v=16" defer></script>
+  </body>
+</html>
+
+
