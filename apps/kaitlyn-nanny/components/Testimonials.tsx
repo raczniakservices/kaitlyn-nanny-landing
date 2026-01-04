@@ -165,14 +165,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
         </div>
       </div>
 
-      <div
-        className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md"
-        style={{
-          // Prevent a "flash of white" before the first blurred background image paints.
-          background:
-            "linear-gradient(180deg, hsl(var(--bg) / 0.25) 0%, hsl(var(--bg) / 0.72) 55%, hsl(var(--bg) / 0.88) 100%), radial-gradient(900px 320px at 18% 18%, hsl(var(--accent) / 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsl(var(--lavender) / 0.16) 0%, transparent 55%)",
-        }}
-      >
+      <div className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md">
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{
@@ -199,7 +192,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                       loading={isFirst ? "eager" : "lazy"}
                       fetchPriority={isFirst ? "high" : "low"}
                       decoding="async"
-                      className="h-full w-full object-cover opacity-[0.14] blur-[10px] scale-110"
+                      className="h-full w-full object-cover opacity-[0.2] blur-[10px] scale-110"
                       aria-hidden="true"
                     />
                     <div
