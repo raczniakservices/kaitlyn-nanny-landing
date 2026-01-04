@@ -182,6 +182,14 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
           {TESTIMONIALS.map((t, idx) => {
             const bg = bgImages[idx % bgImages.length];
             const isFirst = idx === 0;
+            // Vary the “pretty” glow layer per-slide so repeated photos don't feel identical.
+            const a1 = 12 + ((idx * 17) % 70); // 12..81
+            const a2 = 18 + ((idx * 23) % 65); // 18..82
+            const p1x = 12 + ((idx * 19) % 70);
+            const p1y = 15 + ((idx * 11) % 70);
+            const p2x = 85 - ((idx * 13) % 70);
+            const p2y = 78 - ((idx * 9) % 55);
+            const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender) / ${a2 / 100}) 0%, transparent 55%)`;
             return (
               <SwiperSlide key={`${t.author}-${idx}`}>
                 <div className="relative min-h-[260px] py-8 px-12 sm:min-h-[280px] sm:py-10 sm:px-14 md:min-h-[300px] md:px-16">
@@ -205,8 +213,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                     <div
                       className="absolute inset-0"
                       style={{
-                        background:
-                          "radial-gradient(900px 320px at 18% 18%, hsl(var(--accent) / 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsl(var(--lavender) / 0.16) 0%, transparent 55%)",
+                        background: glow,
                       }}
                     />
                   </div>
@@ -218,7 +225,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                     </div>
 
                     <p className="text-lg sm:text-2xl leading-relaxed text-[hsl(var(--text))] font-semibold italic">
-                      <span aria-hidden="true">“</span>
+                       <span aria-hidden="true">“</span>
                       <HighlightedQuote text={t.quote} highlights={t.highlights} />
                       <span aria-hidden="true">”</span>
                     </p>
