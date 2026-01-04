@@ -184,8 +184,8 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
           loop
           speed={450}
           className="w-full"
-          loopAdditionalSlides={2}
-          watchSlidesProgress
+          slidesPerView={1}
+          centeredSlides={true}
         >
           {TESTIMONIALS.map((t, idx) => {
             const bg = bgImages[idx % bgImages.length];
@@ -201,15 +201,15 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
             const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent, 340 85% 60%) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender, 280 60% 70%) / ${a2 / 100}) 0%, transparent 55%)`;
             return (
               <SwiperSlide key={`${t.author}-${idx}`}>
-                <div className="relative h-[420px] py-8 px-12 sm:h-[440px] sm:py-10 sm:px-14 md:h-[460px] md:px-16 flex flex-col">
-                  <div className="pointer-events-none absolute inset-0">
+                <div className="relative h-[420px] py-8 px-12 sm:h-[440px] sm:py-10 sm:px-14 md:h-[460px] md:px-16 flex flex-col overflow-hidden">
+                  <div className="pointer-events-none absolute inset-0 overflow-hidden">
                     <img
                       src={bg}
                       alt=""
                       loading="eager"
                       fetchPriority={isFirst ? "high" : "low"}
                       decoding="async"
-                      className="h-full w-full object-cover opacity-[0.2] blur-[10px] scale-110"
+                      className="h-full w-full object-cover opacity-[0.2] blur-[8px] scale-105"
                       aria-hidden="true"
                     />
                     <div
