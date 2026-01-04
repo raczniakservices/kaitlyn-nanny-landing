@@ -36,6 +36,16 @@ const TESTIMONIALS: Testimonial[] = [
     quote:
       "\"Kaitlyn is amazing!!! My 4 kids love her!! She's so patient esp with my 8 year old who is hard to calm at night. She's my kids favorite sitter!!!! ❤️\"",
     author: "Melanie D."
+  },
+  {
+    quote:
+      "\"Kaitlyn has cared for our kids for years. She’s reliable, keeps us updated, and is great with routines. She helps with homework, keeps screen time in check, and we trust her completely.\"",
+    author: "Ashley R."
+  },
+  {
+    quote:
+      "\"Her flexibility with early/late hours and last-minute schedule changes has been a lifesaver for our family.\"",
+    author: "Steve R."
   }
 ];
 
