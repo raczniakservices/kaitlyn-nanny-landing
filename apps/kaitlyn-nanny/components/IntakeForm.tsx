@@ -599,6 +599,14 @@ export function IntakeForm() {
         <div className="rounded-3xl border border-[hsl(var(--border))] bg-white/80 p-10 shadow-[0_24px_70px_rgba(0,0,0,0.16)] animate-fade-in relative overflow-hidden backdrop-blur-xl">
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-[hsl(var(--accent))]/10 via-transparent to-[hsl(var(--lavender))]/10"></div>
             <div className="relative z-10">
+                <div className="mb-6">
+                    <p className="text-xs font-extrabold tracking-[0.22em] text-[hsl(var(--accent-deep))] uppercase">
+                        READY TO BOOK?
+                    </p>
+                    <p className="mt-2 text-sm text-[hsl(var(--text))]/85">
+                        This helps me understand your needs and confirm availability.
+                    </p>
+                </div>
                 {(state as any)?.ok === false && (state as any)?.error ? (
                     <div className="mb-4 rounded-2xl border border-red-100 bg-red-50 p-3 text-sm text-red-800">
                         {(state as any).error}
@@ -1131,7 +1139,7 @@ export function IntakeForm() {
                                     <FieldError msg={clientErrors.allergiesNotes} />
                                 </div>
                             )}
-                            
+
                             <div>
                                 <FieldLabel>What support do you need during care?</FieldLabel>
                                 <Hint>Example: homework help, meal prep, bedtime routine. Rates start at $27/hour and adjust based on services.</Hint>

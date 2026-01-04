@@ -18,7 +18,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-[hsl(var(--accent-deep))] via-[hsl(var(--accent))] to-[hsl(var(--accent-deep))] bg-size-200 bg-pos-0 text-white shadow-2xl hover:bg-pos-100 hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)]",
+          "btn-primary-premium bg-gradient-to-r from-[hsl(var(--accent-deep))] via-[hsl(var(--accent))] to-[hsl(var(--accent-deep))] bg-size-200 bg-pos-0 text-white shadow-2xl hover:bg-pos-100 hover:shadow-[0_12px_40px_rgba(0,0,0,0.25)]",
         dark: "bg-[hsl(var(--text))] text-white shadow-soft hover:opacity-95",
         outline: "border border-[hsl(var(--border))] bg-white/70 text-[hsl(var(--text))] shadow-sm hover:bg-white/90",
         ghost: "bg-transparent text-[hsl(var(--text))] hover:bg-white/70"

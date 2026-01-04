@@ -1,7 +1,7 @@
 import "./globals.css";
 
 import type { Metadata } from "next";
-import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 
 const body = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -9,10 +9,12 @@ const body = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-const heading = Fraunces({
+const heading = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-heading",
-  display: "swap"
+  display: "swap",
+  // Slightly wider range for elegant hero headlines
+  weight: ["400", "500", "600", "700"]
 });
 
 export const metadata: Metadata = {
