@@ -1,4 +1,4 @@
-﻿import { IntakeForm } from "../components/IntakeForm";
+import { IntakeForm } from "../components/IntakeForm";
 import { Container } from "../components/Container";
 import { Reveal } from "../components/Reveal";
 import { Testimonials } from "../components/Testimonials";
@@ -56,7 +56,7 @@ export default function Page() {
                   </div>
 
                   <p className="text-xs font-bold tracking-[0.22em] text-[hsl(var(--accent-deep))] uppercase">
-                    CHILDCARE Â· BEL AIR
+                    CHILDCARE &middot; BEL AIR
                   </p>
 
                   <h1 className="mt-3 font-[var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-semibold text-[hsl(var(--text))] tracking-tight">
@@ -73,16 +73,25 @@ export default function Page() {
 
                   <div className="mt-5 flex justify-center">
                     <div className="inline-flex items-center gap-2 rounded-full border border-[hsl(var(--border))] bg-white/70 px-3 py-1 text-sm font-semibold text-[hsl(var(--text))]/85 shadow-sm">
-                      <span className="text-[hsl(var(--gold))]" aria-hidden="true">â˜…â˜…â˜…â˜…â˜…</span>
+                      <span className="text-[hsl(var(--gold))]" aria-hidden="true">
+                        &#9733;&#9733;&#9733;&#9733;&#9733;
+                      </span>
                       <span className="font-extrabold text-[hsl(var(--text))]">5.0</span>
                       <span className="text-[hsl(var(--muted))] font-semibold">from 8 Bel Air families</span>
                     </div>
                   </div>
 
                   <p className="mt-3 text-sm italic text-[hsl(var(--text))]/80 max-w-xl mx-auto">
-                    <span className="text-[hsl(var(--accent-deep))] font-extrabold" aria-hidden="true">&ldquo;</span>
-                    Kaitlyn is amazing!!! My 4 kids love her!! She&apos;s my kids favorite sitter!!!! <span className="text-[hsl(var(--accent-deep))]" aria-hidden="true">â¤ï¸</span>
-                    <span className="text-[hsl(var(--accent-deep))] font-extrabold" aria-hidden="true">&ldquo;</span>
+                    <span className="text-[hsl(var(--accent-deep))] font-extrabold" aria-hidden="true">
+                      &ldquo;
+                    </span>
+                    Kaitlyn is amazing!!! My 4 kids love her!! She&apos;s my kids favorite sitter!!!!{" "}
+                    <span className="text-[hsl(var(--accent-deep))]" aria-hidden="true">
+                      &#10084;&#65039;
+                    </span>
+                    <span className="text-[hsl(var(--accent-deep))] font-extrabold" aria-hidden="true">
+                      &rdquo;
+                    </span>
                     <span className="text-[hsl(var(--muted))] font-semibold">{" "}Melanie D.</span>
                   </p>
 
@@ -218,7 +227,7 @@ export default function Page() {
                     size="md"
                     className="px-6 hover-lift transition-transform hover:-translate-y-0.5"
                   >
-                    <a href="#request-care">Message Kaitlyn for Weekend Care â†’</a>
+                    <a href="#request-care">Message Kaitlyn for Weekend Care →</a>
                   </Button>
                 </div>
               </div>
@@ -331,7 +340,7 @@ export default function Page() {
         <Container>
           <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs tracking-widest text-[hsl(var(--muted))] uppercase">
-              Â© {new Date().getFullYear()} Kaitlyn Noel Raczniak Â· Professional Childcare Services
+              © {new Date().getFullYear()} Kaitlyn Noel Raczniak &middot; Professional Childcare Services
             </p>
           </div>
         </Container>
@@ -339,4 +348,3 @@ export default function Page() {
     </>
   );
 }
-
