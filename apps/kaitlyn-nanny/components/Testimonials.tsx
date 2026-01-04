@@ -170,7 +170,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
         style={{
           // Prevent a "flash of white" before the first blurred background image paints.
           background:
-            "linear-gradient(180deg, hsla(var(--bg), 0.25) 0%, hsla(var(--bg), 0.72) 55%, hsla(var(--bg), 0.88) 100%), radial-gradient(900px 320px at 18% 18%, hsla(var(--accent), 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsla(var(--lavender), 0.16) 0%, transparent 55%)",
+            "linear-gradient(180deg, hsl(var(--bg) / 0.25) 0%, hsl(var(--bg) / 0.72) 55%, hsl(var(--bg) / 0.88) 100%), radial-gradient(900px 320px at 18% 18%, hsl(var(--accent) / 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsl(var(--lavender) / 0.16) 0%, transparent 55%)",
         }}
       >
         <Swiper
@@ -206,14 +206,14 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                       className="absolute inset-0"
                       style={{
                         background:
-                          "linear-gradient(180deg, hsla(var(--bg), 0.25) 0%, hsla(var(--bg), 0.72) 55%, hsla(var(--bg), 0.88) 100%)",
+                          "linear-gradient(180deg, hsl(var(--bg) / 0.25) 0%, hsl(var(--bg) / 0.72) 55%, hsl(var(--bg) / 0.88) 100%)",
                       }}
                     />
                     <div
                       className="absolute inset-0"
                       style={{
                         background:
-                          "radial-gradient(900px 320px at 18% 18%, hsla(var(--accent), 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsla(var(--lavender), 0.16) 0%, transparent 55%)",
+                          "radial-gradient(900px 320px at 18% 18%, hsl(var(--accent) / 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsl(var(--lavender) / 0.16) 0%, transparent 55%)",
                       }}
                     />
                   </div>
