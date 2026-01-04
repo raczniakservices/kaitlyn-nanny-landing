@@ -204,8 +204,6 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                     <img
                       src={bg}
                       alt=""
-                      // Phone issue: most slides look “half loaded” because these bg images are lazy.
-                      // We only have 4 unique images; eager-load them all so every slide is fully painted when reached.
                       loading="eager"
                       fetchPriority={isFirst ? "high" : "low"}
                       decoding="async"
