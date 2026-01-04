@@ -198,8 +198,8 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
             // Use fallbacks so the overlay paints even before CSS vars are available (prevents the white flash on first load).
             const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent, 340 85% 60%) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender, 280 60% 70%) / ${a2 / 100}) 0%, transparent 55%)`;
             return (
-              <SwiperSlide key={`${t.author}-${idx}`}>
-                <div className="relative min-h-[260px] py-8 px-12 sm:min-h-[280px] sm:py-10 sm:px-14 md:min-h-[300px] md:px-16">
+              <SwiperSlide key={`${t.author}-${idx}`} className="h-auto">
+                <div className="relative flex flex-col min-h-[360px] py-8 px-12 sm:min-h-[380px] sm:py-10 sm:px-14 md:min-h-[400px] md:px-16">
                   <div className="pointer-events-none absolute inset-0">
                     <img
                       src={bg}
