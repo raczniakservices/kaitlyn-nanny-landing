@@ -59,11 +59,12 @@ export default function Page() {
                     CHILDCARE &middot; BEL AIR
                   </p>
 
-                  <h1 className="mt-3 font-[var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-semibold text-[hsl(var(--text))] tracking-tight">
-                    Loving, dependable in home childcare in Bel Air
+                  <h1 className="mt-3 text-balance font-[var(--font-heading)] text-4xl sm:text-5xl lg:text-6xl font-semibold text-[hsl(var(--text))] tracking-tight leading-tight">
+                    Loving, dependable in home childcare in{" "}
+                    <span className="whitespace-nowrap">Bel Air</span>
                   </h1>
 
-                  <p className="mt-4 text-sm sm:text-base text-[hsl(var(--text))]/80 leading-relaxed max-w-2xl mx-auto">
+                  <p className="mt-4 text-pretty text-sm sm:text-base text-[hsl(var(--text))]/80 leading-relaxed max-w-2xl mx-auto">
                     Experienced nanny trusted by local families. Patient, engaging care in the comfort of your home. Clear communication every step of the way.
                   </p>
 
