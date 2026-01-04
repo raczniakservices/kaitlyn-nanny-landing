@@ -168,7 +168,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
       <div
         className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md"
         style={{
-          // Non-white base so even if images are slow, the card never shows a stark white “missing” bottom.
+          // Non-white base so even if images are slow, the card never shows a stark white "missing" bottom.
           backgroundColor: "hsl(330 30% 92% / 0.75)",
         }}
       >
@@ -188,7 +188,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
           {TESTIMONIALS.map((t, idx) => {
             const bg = bgImages[idx % bgImages.length];
             const isFirst = idx === 0;
-            // Vary the “pretty” glow layer per-slide so repeated photos don't feel identical.
+            // Vary the "pretty" glow layer per-slide so repeated photos don't feel identical.
             const a1 = 12 + ((idx * 17) % 70); // 12..81
             const a2 = 18 + ((idx * 23) % 65); // 18..82
             const p1x = 12 + ((idx * 19) % 70);
@@ -198,8 +198,8 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
             // Use fallbacks so the overlay paints even before CSS vars are available (prevents the white flash on first load).
             const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent, 340 85% 60%) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender, 280 60% 70%) / ${a2 / 100}) 0%, transparent 55%)`;
             return (
-              <SwiperSlide key={`${t.author}-${idx}`} className="h-auto">
-                <div className="relative flex flex-col min-h-[360px] py-8 px-12 sm:min-h-[380px] sm:py-10 sm:px-14 md:min-h-[400px] md:px-16">
+              <SwiperSlide key={`${t.author}-${idx}`}>
+                <div className="relative h-[420px] py-8 px-12 sm:h-[440px] sm:py-10 sm:px-14 md:h-[460px] md:px-16 flex flex-col">
                   <div className="pointer-events-none absolute inset-0">
                     <img
                       src={bg}
@@ -225,16 +225,16 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                     />
                   </div>
 
-                  <div className="relative">
+                  <div className="relative flex flex-col flex-1 justify-center">
                     <div className="mb-5 flex items-center justify-between gap-4">
                       <StarsRow />
                       <QuoteMark />
                     </div>
 
                     <p className="text-lg sm:text-2xl leading-relaxed text-[hsl(var(--text))] font-semibold italic">
-                       <span aria-hidden="true">“</span>
+                      <span aria-hidden="true">&ldquo;</span>
                       <HighlightedQuote text={t.quote} highlights={t.highlights} />
-                      <span aria-hidden="true">”</span>
+                      <span aria-hidden="true">&rdquo;</span>
                     </p>
 
                     <p className="mt-6 text-sm font-semibold text-[hsl(var(--text))]/80">- {t.author}</p>
