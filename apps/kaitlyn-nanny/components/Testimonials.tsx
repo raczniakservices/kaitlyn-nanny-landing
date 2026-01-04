@@ -165,7 +165,13 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md">
+      <div
+        className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md"
+        style={{
+          // Non-white base so even if images are slow, the card never shows a stark white “missing” bottom.
+          backgroundColor: "hsl(330 30% 92% / 0.75)",
+        }}
+      >
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{
@@ -189,7 +195,8 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
             const p1y = 15 + ((idx * 11) % 70);
             const p2x = 85 - ((idx * 13) % 70);
             const p2y = 78 - ((idx * 9) % 55);
-            const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender) / ${a2 / 100}) 0%, transparent 55%)`;
+            // Use fallbacks so the overlay paints even before CSS vars are available (prevents the white flash on first load).
+            const glow = `radial-gradient(900px 320px at ${p1x}% ${p1y}%, hsl(var(--accent, 340 85% 60%) / ${a1 / 100}) 0%, transparent 55%), radial-gradient(900px 320px at ${p2x}% ${p2y}%, hsl(var(--lavender, 280 60% 70%) / ${a2 / 100}) 0%, transparent 55%)`;
             return (
               <SwiperSlide key={`${t.author}-${idx}`}>
                 <div className="relative min-h-[260px] py-8 px-12 sm:min-h-[280px] sm:py-10 sm:px-14 md:min-h-[300px] md:px-16">
@@ -197,7 +204,9 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                     <img
                       src={bg}
                       alt=""
-                      loading={isFirst ? "eager" : "lazy"}
+                      // Phone issue: most slides look “half loaded” because these bg images are lazy.
+                      // We only have 4 unique images; eager-load them all so every slide is fully painted when reached.
+                      loading="eager"
                       fetchPriority={isFirst ? "high" : "low"}
                       decoding="async"
                       className="h-full w-full object-cover opacity-[0.2] blur-[10px] scale-110"
@@ -207,7 +216,7 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
                       className="absolute inset-0"
                       style={{
                         background:
-                          "linear-gradient(180deg, hsl(var(--bg) / 0.25) 0%, hsl(var(--bg) / 0.72) 55%, hsl(var(--bg) / 0.88) 100%)",
+                          "linear-gradient(180deg, hsl(var(--bg, 330 30% 92%) / 0.25) 0%, hsl(var(--bg, 330 30% 92%) / 0.72) 55%, hsl(var(--bg, 330 30% 92%) / 0.88) 100%)",
                       }}
                     />
                     <div
