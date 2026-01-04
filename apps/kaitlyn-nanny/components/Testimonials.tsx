@@ -165,7 +165,14 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
         </div>
       </div>
 
-      <div className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md">
+      <div
+        className="relative overflow-hidden rounded-3xl border border-[hsl(var(--border))] bg-white/60 shadow-soft backdrop-blur-md"
+        style={{
+          // Prevent a "flash of white" before the first blurred background image paints.
+          background:
+            "linear-gradient(180deg, hsla(var(--bg), 0.25) 0%, hsla(var(--bg), 0.72) 55%, hsla(var(--bg), 0.88) 100%), radial-gradient(900px 320px at 18% 18%, hsla(var(--accent), 0.22) 0%, transparent 55%), radial-gradient(900px 320px at 85% 75%, hsla(var(--lavender), 0.16) 0%, transparent 55%)",
+        }}
+      >
         <Swiper
           modules={[Autoplay, Pagination, Navigation]}
           autoplay={{
@@ -181,14 +188,16 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
         >
           {TESTIMONIALS.map((t, idx) => {
             const bg = bgImages[idx % bgImages.length];
+            const isFirst = idx === 0;
             return (
               <SwiperSlide key={`${t.author}-${idx}`}>
-                <div className="relative py-8 px-12 sm:py-10 sm:px-14 md:px-16">
+                <div className="relative min-h-[260px] py-8 px-12 sm:min-h-[280px] sm:py-10 sm:px-14 md:min-h-[300px] md:px-16">
                   <div className="pointer-events-none absolute inset-0">
                     <img
                       src={bg}
                       alt=""
-                      loading="lazy"
+                      loading={isFirst ? "eager" : "lazy"}
+                      fetchPriority={isFirst ? "high" : "low"}
                       decoding="async"
                       className="h-full w-full object-cover opacity-[0.14] blur-[10px] scale-110"
                       aria-hidden="true"
