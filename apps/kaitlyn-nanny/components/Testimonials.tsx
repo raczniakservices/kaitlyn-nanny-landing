@@ -184,6 +184,8 @@ export function Testimonials(_props: { initiallyVisible?: number }) {
           loop
           speed={450}
           className="w-full"
+          loopAdditionalSlides={2}
+          watchSlidesProgress
         >
           {TESTIMONIALS.map((t, idx) => {
             const bg = bgImages[idx % bgImages.length];
